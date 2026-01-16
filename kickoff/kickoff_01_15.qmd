@@ -1,0 +1,17 @@
+---
+title: "Kickoff - lecture 4"
+author: "Peter Ganong and Maggie Shi"
+date-format: January 14/15, 2026
+format: 
+    revealjs:
+        slide-number: true
+        show-slide-number: all
+        self-contained: true
+---
+
+# PS 2 updates
+* **Main update**: re Canvas announcement, deadline pushed back a week to Saturday, Jan. 24
+    * Since no PS due this week, in-lab assessment is based on *this week's lecture slides*
+    * Final project proposal deadline remains on Jan. 24
+* Small update: for 5% bonus points, tell us if/how you used AI on the problem set, and where it was useful vs. not.
+* Both updates should be reflected in revised template.
