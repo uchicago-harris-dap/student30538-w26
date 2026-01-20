@@ -1,0 +1,13 @@
+
+```{python}
+import pandas as pd
+import altair as alt    
+movies_url = 'https://cdn.jsdelivr.net/npm/vega-datasets@1/data/movies.json'
+movies = pd.read_json(movies_url)
+
+# unaggregated scatter plot
+alt.Chart(movies_url).mark_point().encode(
+    alt.X('Release_Date:T', title = "Release Date"),
+    alt.Y('US_Gross:Q', title = "US Gross ($)")
+)
+```

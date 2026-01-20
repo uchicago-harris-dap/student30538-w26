@@ -1,0 +1,13 @@
+```{python}
+import pandas as pd
+import altair as alt    
+movies_url = 'https://cdn.jsdelivr.net/npm/vega-datasets@1/data/movies.json'
+movies = pd.read_json(movies_url)
+
+# scatter plot, filtered to < 1970
+alt.Chart(movies_url).mark_circle().encode(
+    alt.X('Rotten_Tomatoes_Rating:Q', title = "Rotten Tomatoes Rating (%)"),
+    alt.Y('IMDB_Rating:Q', title = "IMDB Rating")
+).transform_filter('year(datum.Release_Date) < 1970'
+).properties(title = "Pre-1970 Sample")
+```

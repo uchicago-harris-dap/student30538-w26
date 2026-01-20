@@ -1,0 +1,69 @@
+---
+title: "Visualization (Data Transformation)"
+author: "Peter Ganong and Maggie Shi"
+date: today
+date-format: long
+format: 
+  revealjs:
+    slide-number: true
+    show-slide-number: all
+    self-contained: true
+---
+
+
+##  Do-pair-share solution: option 1 {background-color="aliceblue"}
+```{.python}
+alt.Chart(movies_url).mark_area().encode(
+    alt.X('month(Release_Date):T', title = "Release Month"),
+    alt.Y('median(US_Gross):Q', title = "Median US Gross ($)")
+)
+```
+
+```{python}
+
+import pandas as pd
+import altair as alt
+
+movies_url = 'https://cdn.jsdelivr.net/npm/vega-datasets@1/data/movies.json'
+movies = pd.read_json(movies_url)
+
+alt.Chart(movies_url).mark_area().encode(
+    alt.X('month(Release_Date):T', title = "Release Month"),
+    alt.Y('median(US_Gross):Q', title = "Median US Gross ($)")
+)
+```
+
+**Answer**: if we look at the *median*, highest-grossing is summer
+
+##  Do-pair-share solution: option 2 {background-color="aliceblue" style="font-size: 0.8em"}
+```{.python}
+alt.Chart(movies_url).mark_area().encode(
+    alt.X('month(Release_Date):T', title = "Release Month"),
+    alt.Y('max(US_Gross):Q', title = "Max US Gross ($)")
+)
+```
+
+```{python}
+alt.Chart(movies_url).mark_area().encode(
+    alt.X('month(Release_Date):T', title = "Release Month"),
+    alt.Y('max(US_Gross):Q', title = "Max US Gross ($)" )
+)
+```
+
+**Answer**: if we look at the *max*, highest-grossing is holiday season
+
+##  Do-pair-share solution: option 3 {background-color="aliceblue" style="font-size: 0.8em"}
+```{.python}
+alt.Chart(movies_url).mark_area().encode(
+    alt.X('month(Release_Date):T', title = "Release Month"),
+    alt.Y('mean(US_Gross):Q', title = "Average US Gross ($)" )
+)
+```
+
+```{python}
+alt.Chart(movies_url).mark_area().encode(
+    alt.X('month(Release_Date):T', title = "Release Month"),
+    alt.Y('mean(US_Gross):Q', title = "Average US Gross ($)" )
+)
+```
+**Answer**: if we look at the *mean*, highest-grossing is summer. Furthermore, the summer mean is much higher than the winter mean. How does that relate to the previous graph?
