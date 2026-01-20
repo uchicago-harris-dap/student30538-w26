@@ -1,7 +1,9 @@
 name: dap
 channels:
+  - conda-forge
   - defaults
 dependencies:
+  - python=3.11
   - altair
   - bs4
   - fiona
@@ -20,4 +22,3 @@ dependencies:
   - statsmodels
   - vega_datasets
   - streamlit
-prefix: /Users/maggieshi/miniconda3/envs/dap
