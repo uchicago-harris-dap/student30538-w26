@@ -1,0 +1,933 @@
+---
+title: "Visualization (Data Transformation)"
+author: "Peter Ganong and Maggie Shi"
+date: today
+date-format: long
+format: 
+  revealjs:
+    slide-number: true
+    show-slide-number: all
+---
+
+## Introduction: roadmap
+
+* Putting this lecture in context
+* Introducing the `movies` dataset
+    * load data
+    * `shape`
+    * `head()`
+
+## Putting this lecture in context
+* This lecture explores methods for *transforming* data, focusing on aggregation.
+    * We will be mostly following Chapter 3 in the data visualization (Heer et al.) book 
+* Fundamental problem in data visualization: in most cases, you **do not want to show every single data point** in your dataset. 
+* Instead, you want to extract patterns which you (the analyst) think are interesting. 
+
+## Aggregation
+
+* One nice thing about `altair` is that it nudges you to aggregate. 
+* One example: if you try to make a plot with 10,000 dots, it will give you an error: `MaxRowsError: The number of rows in your dataset is greater than the maximum allowed (5000).`
+    * Help file: "This is not because Altair cannot handle larger datasets, but it is because it is important for the user to think carefully about how large datasets are handled. "
+    * More details [here](https://altair-viz.github.io/user_guide/large_datasets.html)
+
+
+## Load packages and data
+```{.python}
+import pandas as pd
+import altair as alt
+
+movies_url = 'https://cdn.jsdelivr.net/npm/vega-datasets@1/data/movies.json'
+movies = pd.read_json(movies_url)
+```
+
+```{python}
+import pandas as pd
+import altair as alt
+movies_url = 'https://cdn.jsdelivr.net/npm/vega-datasets@1/data/movies.json'
+movies = pd.read_json(movies_url)
+```
+
+![](pictures/movies_json.png){fig-width=30%, fig-align="center"}
+
+## An aside on JSON
+- Movies database is stored as a `.json` at [this URL](https://cdn.jsdelivr.net/npm/vega-datasets@1/data/movies.json)
+- Recall `altair` that writes Vega-lite, which is also recorded in JSON!
+    - JSON is just a "syntax" to store text, numbers, etc. in a human-readable way
+    - In spatial lectures, we will also encounter the "geojson" format, which can store geographic features 
+    
+
+
+
+## `head()`
+```{.python}
+movies.head(5)
+```
+
+<div style="font-size: 50%">
+```{python}
+movies.head(5)
+```
+</div>
+
+## `shape`
+```{.python}
+movies.shape
+```
+
+```{python}
+movies.shape
+```
+
+With 3201 movies, we are going to need to do some transformation if we want to uncover any patterns in the data!
+
+## Variables of interest
+* **Rotten Tomatoes** ratings are determined by taking "thumbs up" and "thumbs down" judgments from film critics and calculating the percentage of positive reviews.
+* **IMDB ratings** are formed by averaging scores (ranging from 1 to 10) provided by the site's users.
+
+## Exploring the raw data
+```{.python}
+alt.Chart(movies_url).mark_circle().encode(
+    alt.X('Rotten_Tomatoes_Rating:Q'),
+    alt.Y('IMDB_Rating:Q')
+)
+```
+
+```{python}
+alt.Chart(movies_url).mark_circle().encode(
+    alt.X('Rotten_Tomatoes_Rating:Q'),
+    alt.Y('IMDB_Rating:Q')
+)
+```
+
+<!-- 
+# Scatter plots and binning
+
+## Scatter plots and binning: roadmap
+* scatter plots
+* binning
+
+## Data scatter plot
+* **Rotten Tomatoes** ratings are determined by taking "thumbs up" and "thumbs down" judgments from film critics and calculating the percentage of positive reviews.
+* **IMDB ratings** are formed by averaging scores (ranging from 1 to 10) provided by the site's users.
+```{python}
+alt.Chart(movies_url).mark_circle().encode(
+    alt.X('Rotten_Tomatoes_Rating:Q'),
+    alt.Y('IMDB_Rating:Q')
+)
+```
+
+
+## scatter plot -- add `bin=True`
+```{python}
+alt.Chart(movies_url).mark_circle().encode(
+    alt.X('Rotten_Tomatoes_Rating:Q', bin=True),
+    alt.Y('IMDB_Rating:Q')
+)
+```
+
+## scatter plot -- 20 bins
+```{python}
+alt.Chart(movies_url).mark_circle().encode(
+    alt.X('Rotten_Tomatoes_Rating:Q', bin=alt.BinParams(maxbins=20)),
+    alt.Y('IMDB_Rating:Q', bin=True)
+)
+```
+
+PG to SSS this section is really underwhelming. it's not incorrect, it just sucks. it is completely unclear what the point is. We might consider deleting it entirely. Or binning on both the x and the y-variable so at least there's a bit more of a payoff
+ -->
+
+# Aggregation
+
+## Aggregation: roadmap
+
+In previous lectures, we actually already saw aggregation via `average()` and `min()`. We just didn't talk explicitly about that step. Now, we examine it more carefully.
+
+* `average()`
+* interquartile range
+* do-pair-share
+
+The Altair documentation includes the [full set of available aggregation functions](https://altair-viz.github.io/user_guide/encodings/index.html#aggregation-functions).
+
+
+## `average()`
+```{.python code-line-numbers="|2"}
+alt.Chart(movies_url).mark_bar().encode(
+    alt.X('average(Rotten_Tomatoes_Rating):Q'),
+    alt.Y('Major_Genre:N')
+)
+```
+
+```{python}
+alt.Chart(movies_url).mark_bar().encode(
+    alt.X('average(Rotten_Tomatoes_Rating):Q'),
+    alt.Y('Major_Genre:N')
+)
+```
+
+* This plot is fine, but hard to interpret takeaways quickly.
+
+* Discussion Question: what does the y-axis seem to be sorted on? Why?
+
+
+::: {.notes .content-visible when-profile="speaker"}
+**NOTES:**
+*solution: it seems to be sorted alphabetically, except for "null." That is because we have told Altair it is nominal data. So we've learned that altair considers "null" to be < "a" in alphabetical sorting.*
+:::
+
+
+
+## `average()` with `sort(...)`
+More useful: sort the bars vertically, based on x-axis encoding
+
+```{.python code-line-numbers="|4"}
+alt.Chart(movies_url).mark_bar().encode(
+    alt.X('average(Rotten_Tomatoes_Rating):Q'),
+    alt.Y('Major_Genre:N', 
+        sort=alt.EncodingSortField(op='average', field='Rotten_Tomatoes_Rating', order='descending')
+    )
+)
+```
+
+```{python}
+alt.Chart(movies_url).mark_bar().encode(
+    alt.X('average(Rotten_Tomatoes_Rating):Q'),
+    alt.Y('Major_Genre:N', 
+        sort=alt.EncodingSortField(op='average', field='Rotten_Tomatoes_Rating', order='descending')
+    )
+)
+```
+This focuses the viewer's attention on which movie types are most and least popular
+
+
+
+## Interquartile range
+Create interquartile range by plotting first and third quartiles, then sorting by median.
+
+```{.python  code-line-numbers="|2|3|4|"}
+alt.Chart(movies_url).mark_bar().encode(
+    alt.X('q1(Rotten_Tomatoes_Rating):Q'),
+    alt.X2('q3(Rotten_Tomatoes_Rating):Q'),
+    alt.Y('Major_Genre:N', sort=alt.EncodingSortField(op='median', field='Rotten_Tomatoes_Rating', order='descending')
+    )
+)
+```
+
+```{python}
+alt.Chart(movies_url).mark_bar().encode(
+    alt.X('q1(Rotten_Tomatoes_Rating):Q'),
+    alt.X2('q3(Rotten_Tomatoes_Rating):Q'),
+    alt.Y('Major_Genre:N', sort=alt.EncodingSortField(
+        op='median', field='Rotten_Tomatoes_Rating', order='descending')
+    )
+)
+```
+
+
+Discussion question: what can you learn from the IQR plot that you could not learn from the plot with just `average()`?
+
+::: {.notes .content-visible when-profile="speaker"}
+**NOTES:**
+Documentary movies are uniformly well-acclaimed. In contrast, horror movies (for example, have a lot more heterogeneity)
+:::
+
+## Aggregation functions
+* Distribution: `min()`, `q1()`, `median()`, `mean()`, `q3()`, `max()`
+* Dispersion: `variance()`, `stdev()`, `distinct()`
+* Bootstrap confidence intervals: `ci0()`, `ci1()` 
+* Data: `missing()`, `values()`
+* Full list [here](https://altair-viz.github.io/user_guide/encodings/index.html#aggregation-functions)
+
+
+## Case study: when are the highest grossing films?
+```{.python}
+movies_gross = movies[['US_Gross', 'Release_Date']]
+movies_gross.head()
+```
+
+```{python}
+movies_gross = movies[['US_Gross', 'Release_Date']]
+movies_gross.head()
+```
+
+
+## A first pass
+```{.python}
+alt.Chart(movies_url).mark_point().encode(
+    alt.X('Release_Date:T'),
+    alt.Y('US_Gross:Q')
+)
+```
+
+
+
+```{python}
+alt.Chart(movies_url).mark_point().encode(
+    alt.X('Release_Date:T'),
+    alt.Y('US_Gross:Q')
+)
+```
+
+Obviously we need to aggregate. 
+
+Also: what bug in the data does this plot reveal?
+
+::: {.notes .content-visible when-profile="speaker"}
+**NOTES:**
+*solution: some films have impossible release dates*
+:::
+
+## Do-pair-share {background-color="aliceblue"}
+1. *Do* -- make a plot on your own
+
+2. *Pair* -- compare your results with person next to you
+
+3. *Share* -- discuss results as a class
+
+- **Question**: What time of year are the highest grossing films released? Aggregate both the x- and the y-variables.
+    - There are several ways to approach answering this question. What seems most reasonable to you? 
+
+
+## Data aggregation: Do-pair-share {background-color="aliceblue"}
+Starter code in lecture `transform.qmd` file:
+
+```{.python style="font-size: 0.8em"}
+import pandas as pd
+import altair as alt    
+movies_url = 'https://cdn.jsdelivr.net/npm/vega-datasets@1/data/movies.json'
+movies = pd.read_json(movies_url)
+
+# unaggregated scatter plot
+alt.Chart(movies_url).mark_point().encode(
+    alt.X('Release_Date:T'),
+    alt.Y('US_Gross:Q')
+)
+```
+Documentation on working with time units [here](https://altair-viz.github.io/user_guide/transform/timeunit.html)
+
+
+<!-- ZZZ: delete before posting -->
+##  Do-pair-share solution: option 1 {background-color="aliceblue"}
+```{.python}
+alt.Chart(movies_url).mark_area().encode(
+    alt.X('month(Release_Date):T'),
+    alt.Y('median(US_Gross):Q')
+)
+```
+
+```{python}
+alt.Chart(movies_url).mark_area().encode(
+    alt.X('month(Release_Date):T'),
+    alt.Y('median(US_Gross):Q')
+)
+```
+
+**Answer**: if we look at the *median*, highest-grossing is summer
+
+##  Do-pair-share solution: option 2 {background-color="aliceblue"}
+```{.python}
+alt.Chart(movies_url).mark_area().encode(
+    alt.X('month(Release_Date):T'),
+    alt.Y('max(US_Gross):Q')
+)
+```
+
+```{python}
+alt.Chart(movies_url).mark_area().encode(
+    alt.X('month(Release_Date):T'),
+    alt.Y('max(US_Gross):Q')
+)
+```
+
+**Answer**: if we look at the *max*, highest-grossing is holiday season
+
+##  do-pair-share solution: option 3 {background-color="aliceblue"}
+```{.python}
+alt.Chart(movies_url).mark_area().encode(
+    alt.X('month(Release_Date):T'),
+    alt.Y('mean(US_Gross):Q')
+)
+```
+
+```{python}
+alt.Chart(movies_url).mark_area().encode(
+    alt.X('month(Release_Date):T'),
+    alt.Y('mean(US_Gross):Q')
+)
+```
+**Answer**: if we look at the *mean*, highest-grossing is summer. Furthermore, the summer mean is much higher than the winter mean. How does that relate to the previous graph?
+
+## More on time units
+`T`emporal variables can be transformed into a variety of other time units
+
+* `year`
+* `quarter`
+* `month`
+* `date` (numeric day in month)
+* `day` (day of the week)
+* `hours`
+* `yearmonth` 
+* `hoursminutes`
+
+<!-- ZZZ: end deletion before posting -->
+
+## Aggregation: summary
+
+* Many built-in aggregation functions to quantify distribution, dispersion, and characterize data
+* Dates: see prior slide
+
+# Advanced data transformation
+
+## Advanced data transformation: introduction 
+* Two ways to aggregate data in `altair`
+    * Within the encoding itself: `alt.Y('median(US_Gross):Q')`
+    * Separately using a top-level aggregate transform
+* Doing it in the encoding is fine for simple transformations
+* But for advanced transformations, we'll have to define it separately
+
+## Advanced data transformation: roadmap
+* `transform_calculate()`
+* `transform_filter()`
+* do-pair-share
+* `transform_aggregate()`
+* `transform_window()`
+
+These are all written in the [Vega expression language](https://vega.github.io/vega/docs/expressions/).
+
+
+## Connection to packages you might already know
+One way to think of these verbs is that they are fundamental to any data analysis project and so in any/every language you learn, you need to know how to do these.
+
+<div style="font-size: 50%">
+Purpose | Vega | `pandas` equivalent |
+| --- | --- | --- | 
+Define a new variable | `transform_calculate()` | `df['new_col']` | 
+Filter to subset of rows | `transform_filter(cond)` | `df.loc[cond]` | 
+Aggregate function - reduces number of rows down to one per group | `transform_aggregate(groupby(...))` | `df.groupby('A').agg('mean')` 
+Window function - transform across multiple rows, keeps same num. of rows) | `transform_window(sum())` | `df['values'].cumsum()`  | 
+</div>
+
+
+## Connection to prior material
+
+* You already know how to do these all in `pandas` so it is not conceptually new. 
+
+* Why bother doing it in `altair`?
+
+    * **Exploratory data analysis** can be done faster in `altair`: manipulate data and plot simulataneously
+    * Aggregation and transformations are temporary -- don't need to define and keep track of new aggregated dataframes
+
+## `transform_calculate` case study
+**Question**: what time of year do US movies make money abroad? 
+
+```{.python}
+alt.Chart(movies_url).mark_area().transform_calculate(
+    NonUS_Gross='datum.Worldwide_Gross - datum.US_Gross'
+).encode(
+    alt.X('month(Release_Date):T'),
+    alt.Y('median(NonUS_Gross):Q')
+)
+```
+
+## `transform_calculate` case study
+**Question**: what time of year do US movies make money abroad? 
+```{.python code-line-numbers="1-2"}
+alt.Chart(movies_url).mark_area().transform_calculate(
+    NonUS_Gross='datum.Worldwide_Gross - datum.US_Gross'
+).encode(
+    alt.X('month(Release_Date):T'),
+    alt.Y('median(NonUS_Gross):Q')
+)
+```
+<div style="font-size: 80%">
+
+* `NonUS_Gross` is a variable we're defining *temporarily*
+* `transform_calculate()` uses expressions for writing basic formulas
+    * Math functions: `min()`, `random()`, `round()`
+    * Statistical functions: `sampleNormal()`, `sampleUniform()`
+    * Date-time functions: `date()`, `year()`, `month()`
+    * String functions: `length()`, `lower()`,`substring()`
+* Full list [here](https://vega.github.io/vega/docs/expressions/)
+</div>
+
+## `transform_calculate` case study
+**Question**: what time of year do US movies make money abroad? 
+```{.python code-line-numbers="1-2"}
+alt.Chart(movies_url).mark_area().transform_calculate(
+    NonUS_Gross='datum.Worldwide_Gross - datum.US_Gross'
+).encode(
+    alt.X('month(Release_Date):T'),
+    alt.Y('median(NonUS_Gross):Q')
+)
+```
+
+* `datum` is how you reference the underlying dataset within a transformation expression
+* Here, `datum` means `movies_url`
+
+
+## `transform_calculate` case study
+**Question**: what time of year do US movies make money abroad? 
+```{.python code-line-numbers="5"}
+alt.Chart(movies_url).mark_area().transform_calculate(
+    NonUS_Gross='datum.Worldwide_Gross - datum.US_Gross'
+).encode(
+    alt.X('month(Release_Date):T'),
+    alt.Y('median(NonUS_Gross):Q')
+)
+```
+
+* After defining `NonUS_Gross`, we can use like any other variable within `movies_url`
+* It can be combined with other aggregation methods
+
+
+## `transform_calculate` case study
+**Question**: what time of year do US movies make money abroad? 
+
+```{python}
+alt.Chart(movies_url).mark_area().transform_calculate(
+    NonUS_Gross='datum.Worldwide_Gross - datum.US_Gross'
+).encode(
+    alt.X('month(Release_Date):T'),
+    alt.Y('median(NonUS_Gross):Q')
+)
+```
+
+
+
+## `transform_filter`
+* Goal: show just movies before 1970
+```{.python code-line-numbers="1-2|"}
+alt.Chart(movies_url).mark_circle().transform_filter(
+    'year(datum.Release_Date) < 1970').encode(
+    alt.X('Rotten_Tomatoes_Rating:Q'),
+    alt.Y('IMDB_Rating:Q')
+)
+```
+
+* `transform_filter` filters the dataset based on an expression
+* Like `transform_aggregate`, this filtering is *temporary*
+
+
+## `transform_filter`
+* Goal: show just movies before 1970
+```{.python}
+alt.Chart(movies_url).mark_circle().transform_filter(
+    'year(datum.Release_Date) < 1970').encode(
+    alt.X('Rotten_Tomatoes_Rating:Q'),
+    alt.Y('IMDB_Rating:Q')
+)
+```
+
+```{python}
+alt.Chart(movies_url).mark_circle().encode(
+    alt.X('Rotten_Tomatoes_Rating:Q'),
+    alt.Y('IMDB_Rating:Q')
+).transform_filter('year(datum.Release_Date) < 1970')
+```
+
+
+
+
+## Do-pair-share  {background-color="aliceblue"}
+- Make two plots that compare ratings before and after 1970
+    - Use `transform_filter()` to create a plot of ratings before vs. after 1970, then append side-by-side
+    - Plot before and after 1970 on one plot
+        - Use `transform_aggregate()` to create a categorical variable to indicate whether an observation is from before or after 1970. 
+        - Encode the color of the mark depending on the value of that categorical variable
+- These plots show equivalent information. Which do you prefer and why?
+
+## Do-pair-share  {background-color="aliceblue"}
+Starter code in lecture `transform.qmd` file:
+
+```{.python style="font-size: 0.8em"}
+import pandas as pd
+import altair as alt    
+movies_url = 'https://cdn.jsdelivr.net/npm/vega-datasets@1/data/movies.json'
+movies = pd.read_json(movies_url)
+
+# scatter plot, filtered to < 1970
+alt.Chart(movies_url).mark_circle().encode(
+    alt.X('Rotten_Tomatoes_Rating:Q'),
+    alt.Y('IMDB_Rating:Q')
+).transform_filter('year(datum.Release_Date) < 1970')
+```
+
+Hint: recall `graphA | graphB` plots `graphA` next to `graphB`
+
+## Do-pair-share solution: plot 1  {background-color="aliceblue"}
+```{.python}
+before = alt.Chart(movies_url).mark_circle().encode(
+    alt.X('Rotten_Tomatoes_Rating:Q'),
+    alt.Y('IMDB_Rating:Q')
+).transform_filter('year(datum.Release_Date) < 1970')
+
+after = alt.Chart(movies_url).mark_circle().encode(
+    alt.X('Rotten_Tomatoes_Rating:Q'),
+    alt.Y('IMDB_Rating:Q')
+).transform_filter('year(datum.Release_Date) > 1970')
+
+before | after
+```
+
+
+```{python}
+before = alt.Chart(movies_url).mark_circle().encode(
+    alt.X('Rotten_Tomatoes_Rating:Q'),
+    alt.Y('IMDB_Rating:Q')
+).transform_filter('year(datum.Release_Date) < 1970')
+
+after = alt.Chart(movies_url).mark_circle().encode(
+    alt.X('Rotten_Tomatoes_Rating:Q'),
+    alt.Y('IMDB_Rating:Q')
+).transform_filter('year(datum.Release_Date) > 1970')
+
+before | after
+```
+
+<!-- ZZZ delete solution below -->
+## Do-pair-share solution: plot 2  {background-color="aliceblue"}
+```{.python}
+alt.Chart(movies_url).mark_circle().transform_calculate(
+    pre1970='year(datum.Release_Date) < 1970'
+).encode(
+    alt.X('Rotten_Tomatoes_Rating:Q'),
+    alt.Y('IMDB_Rating:Q'),
+    alt.Color('pre1970:N')
+)
+```
+
+```{python}
+alt.Chart(movies_url).mark_circle().transform_calculate(
+    pre1970='year(datum.Release_Date) < 1970'
+).encode(
+    alt.X('Rotten_Tomatoes_Rating:Q'),
+    alt.Y('IMDB_Rating:Q'),
+    alt.Color('pre1970:N')
+)
+```
+
+The first plot is better - the second one is too crowded and many of the post-1970 points are blocked.
+
+<!-- ZZZ end deletion -->
+
+## `transform_aggregate` recap from earlier in lecture
+
+```{.python code-line-numbers="2|"}
+alt.Chart(movies_url).mark_bar().encode(
+    alt.X('average(Rotten_Tomatoes_Rating):Q'),
+    alt.Y('Major_Genre:N')
+)
+```
+
+```{python}
+alt.Chart(movies_url).mark_bar().encode(
+    alt.X('average(Rotten_Tomatoes_Rating):Q'),
+    alt.Y('Major_Genre:N')
+)
+```
+
+
+
+## Under the hood
+We can also express this in a more verbose way, with `transform_aggregate()`
+
+```{.python code-line-numbers="1-3|"  style="font-size: 0.8em"}
+alt.Chart(movies_url).mark_bar().transform_aggregate(
+    groupby=['Major_Genre'],
+    Average_Rating='average(Rotten_Tomatoes_Rating)'
+).encode(
+    alt.X('Average_Rating:Q'),
+    alt.Y('Major_Genre:N')
+)
+```
+```{python}
+alt.Chart(movies_url).mark_bar().transform_aggregate(
+    groupby=['Major_Genre'],
+    Average_Rating='average(Rotten_Tomatoes_Rating)'
+).encode(
+    alt.X('Average_Rating:Q'),
+    alt.Y('Major_Genre:N')
+)
+```
+
+Discussion question -- If prior two code blocks have identical output, which version is better (and why)?
+
+
+::: {.notes .content-visible when-profile="speaker"}
+**NOTES:**
+*solution:
+Neither is better. 
+
+The former is more concise.
+
+The second is more clear because it says explicitly what we are grouping by when we take the mean
+
+Ideally by the end of the discussion the students should see the pros and cons.
+:::
+
+
+## `transform_window`: case study
+**Question**: who are the top grossing directors of all time?
+
+```{.python code-line-numbers="1-3|6-8|"}
+alt.Chart(movies_url).mark_bar().transform_aggregate(
+    Gross='sum(Worldwide_Gross)',
+    groupby=['Director']
+).encode(
+    alt.X('Worldwide_Gross:Q'),
+    alt.Y('Director:N', sort=alt.EncodingSortField(
+        op='max', field='Gross', order='descending'
+    ))
+)
+```
+Start by summing `Worldwide_Gross` for each director, and then plotting in descending order. 
+
+## `transform_window`: case study
+**Question**: who are the top grossing directors of all time?
+```{python}
+alt.Chart(movies_url).mark_bar().transform_aggregate(
+    Gross='sum(Worldwide_Gross)',
+    groupby=['Director']
+).encode(
+    alt.X('Gross:Q'),
+    alt.Y('Director:N', sort=alt.EncodingSortField(
+        op='max', field='Gross', order='descending'
+    ))
+).properties(
+    width=200,
+    height=10000
+)
+```
+
+## `transform_window`: case study
+That's a lot of directors! Let's restrict to the **top 10**
+
+
+```{.python code-line-numbers="4-6"}
+alt.Chart(movies_url).mark_bar().transform_aggregate(
+    Gross='sum(Worldwide_Gross)',
+    groupby=['Director']
+).transform_window(
+    Rank='rank()',
+    sort=[alt.SortField('Gross', order='descending')]
+).transform_filter(
+    'datum.Rank <= 10'
+).encode(
+    alt.X('Gross:Q'),
+    alt.Y('Director:N', sort=alt.EncodingSortField(
+        op='max', field='Gross', order='descending'
+    ))
+)
+```
+
+* Use `transform_window()` when we want to keep the *same* number of rows
+* Opposed to `transform_aggregate()` which *reduces* the number of rows
+
+## `transform_window`: case study
+That's a lot of directors! Let's restrict to the **top 10**
+
+```{.python code-line-numbers="7-8|"}
+alt.Chart(movies_url).mark_bar().transform_aggregate(
+    Gross='sum(Worldwide_Gross)',
+    groupby=['Director']
+).transform_window(
+    Rank='rank()',
+    sort=[alt.SortField('Gross', order='descending')]
+).transform_filter(
+    'datum.Rank <= 10'
+).encode(
+    alt.X('Gross:Q'),
+    alt.Y('Director:N', sort=alt.EncodingSortField(
+        op='max', field='Gross', order='descending'
+    ))
+)
+```
+
+After ranking, use `transform_filter()` to restrict to the top 10 highest-ranked
+
+
+## `transform_window`: case study
+
+```{python}
+alt.Chart(movies_url).mark_bar().transform_aggregate(
+    Gross='sum(Worldwide_Gross)',
+    groupby=['Director']
+).transform_window(
+    Rank='rank()',
+    sort=[alt.SortField('Gross', order='descending')]
+).transform_filter(
+    'datum.Rank <= 10'
+).encode(
+    alt.X('Gross:Q'),
+    alt.Y('Director:N', sort=alt.EncodingSortField(
+        op='max', field='Gross', order='descending'
+    ))
+)
+```
+
+* `null` is not a director, and we certainly don't want to say they're the highest-grossing director. 
+* So let's remove that -> `transform_filter()` again
+
+## `transform_window`: case study
+```{.python code-line-numbers="7-8"}
+alt.Chart(movies_url).mark_bar().transform_aggregate(
+    Gross='sum(Worldwide_Gross)',
+    groupby=['Director']
+).transform_window(
+    Rank='rank()',
+    sort=[alt.SortField('Gross', order='descending')]
+).transform_filter(
+    'datum.Director != null'
+).encode(
+    alt.X('Gross:Q'),
+    alt.Y('Director:N', sort=alt.EncodingSortField(
+        op='max', field='Gross', order='descending'
+    ))
+)
+```
+
+## `transform_window`: case study
+```{python}
+alt.Chart(movies_url).mark_bar().transform_aggregate(
+    Gross='sum(Worldwide_Gross)',
+    groupby=['Director']
+).transform_window(
+    Rank='rank()',
+    sort=[alt.SortField('Gross', order='descending')]
+).transform_filter(
+    'datum.Rank <= 20'
+).transform_filter(
+    'datum.Director != null'
+).encode(
+    alt.X('Gross:Q'),
+    alt.Y('Director:N', sort=alt.EncodingSortField(
+        op='max', field='Gross', order='descending'
+    ))
+)
+```
+
+**Question**: How many directors are displayed now? Why?
+
+
+::: {.notes .content-visible when-profile="speaker"}
+**NOTES:**
+*solution: 9. The issue is that we first filter to rank <= 10 and then we remove the null.*
+:::
+
+## `transform_window`: case study
+We need to remove `null` *before* ranking and filtering. Our final graph:
+```{.python  code-line-numbers="1-2"}
+alt.Chart(movies_url).mark_bar().transform_filter(
+    'datum.Director != null'
+).transform_aggregate(
+    Gross='sum(Worldwide_Gross)',
+    groupby=['Director']
+).transform_window(
+    Rank='rank()',
+    sort=[alt.SortField('Gross', order='descending')]
+).transform_filter(
+    'datum.Rank < 10'
+).encode(
+    alt.X('Gross:Q'),
+    alt.Y('Director:N', sort=alt.EncodingSortField(
+        op='max', field='Gross', order='descending'
+    ))
+)
+```
+## `transform_window`: case study
+```{python}
+alt.Chart(movies_url).mark_bar().transform_filter(
+    'datum.Director != null'
+).transform_aggregate(
+    Gross='sum(Worldwide_Gross)',
+    groupby=['Director']
+).transform_window(
+    Rank='rank()',
+    sort=[alt.SortField('Gross', order='descending')]
+).transform_filter(
+    'datum.Rank < 10'
+).encode(
+    alt.X('Gross:Q'),
+    alt.Y('Director:N', sort=alt.EncodingSortField(
+        op='max', field='Gross', order='descending'
+    ))
+)
+```
+
+Steven Spielberg has been quite successful in his career!
+
+## `transform_window`: in-class exercise {background-color="aliceblue"}
+*  Showing sums might favor directors who have had longer careers, and so have made more movies and thus more money. 
+* What happens if we change the choice of aggregate operation?
+* Who is the most successful director in terms of  `average` gross per film?
+
+## `transform_window`: in-class exercise {background-color="aliceblue"}
+Starter code in `transform.qmd`: 
+```{.python}
+import pandas as pd
+import altair as alt    
+movies_url = 'https://cdn.jsdelivr.net/npm/vega-datasets@1/data/movies.json'
+movies = pd.read_json(movies_url)
+
+alt.Chart(movies_url).mark_bar().transform_filter(
+    'datum.Director != null'
+).transform_aggregate(
+    Gross='sum(Worldwide_Gross)',
+    groupby=['Director']
+).transform_window(
+    Rank='rank()',
+    sort=[alt.SortField('Gross', order='descending')]
+).transform_filter(
+    'datum.Rank < 10'
+).encode(
+    alt.X('Gross:Q'),
+    alt.Y('Director:N', sort=alt.EncodingSortField(
+        op='max', field='Gross', order='descending'
+    ))
+)
+```
+
+## `transform_window`: in-class exercise
+<!-- ZZZ: solution to delete -->
+```{python}
+alt.Chart(movies_url).mark_bar().transform_filter(
+    'datum.Director != null'
+).transform_aggregate(
+    Gross='average(Worldwide_Gross)',
+    groupby=['Director']
+).transform_window(
+    Rank='rank()',
+    sort=[alt.SortField('Gross', order='descending')]
+).transform_filter(
+    'datum.Rank < 10'
+).encode(
+    alt.X('Gross:Q'),
+    alt.Y('Director:N', sort=alt.EncodingSortField(
+        op='max', field='Gross', order='descending'
+    ))
+)
+```
+
+
+
+<!-- end ZZZ -->
+
+*Solution: get David Yates (last four Harry Potter movies) and also James Cameron (Titanic, Avatar)*
+
+
+
+
+## Advanced data transformation: summary
+
+<div style="font-size: 50%">
+Purpose | Vega | `pandas` equivalent |
+| --- | --- | --- | 
+Define a new variable | `transform_calculate()` | `df['new_col']` | 
+Filter to subset of rows | `transform_filter(cond)` | `df.loc[cond]` | 
+Aggregate function - reduces number of rows down to one per group | `transform_aggregate(groupby(...))` | `df.groupby('A').agg('mean')` 
+Window function - transform across multiple rows, keeps same num. of rows) | `transform_window(sum())` | `df['values'].cumsum()`  | 
+</div>
+
+
+
+* Altair actually has 19 transformation methods (and counting...) and we have only covered four of them. 
+* Read about the rest of them [here](https://altair-viz.github.io/user_guide/transform/index.html).

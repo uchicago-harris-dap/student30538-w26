@@ -1,0 +1,76 @@
+---
+title: "Visualization (Data Transformation)"
+author: "Peter Ganong and Maggie Shi"
+date: today
+date-format: long
+format: 
+  revealjs:
+    slide-number: true
+    show-slide-number: all
+    self-contained: true
+---
+
+
+
+## Do-pair-share solution: plot 1  {background-color="aliceblue"}
+```{.python}
+before = alt.Chart(movies_url).mark_circle().encode(
+    alt.X('Rotten_Tomatoes_Rating:Q', title = "Rotten Tomatoes Rating (%)"),
+    alt.Y('IMDB_Rating:Q', title = "IMDB Rating")
+).transform_filter('year(datum.Release_Date) < 1970'
+).properties(title = "Pre-1970 Sample")
+
+after = alt.Chart(movies_url).mark_circle().encode(
+    alt.X('Rotten_Tomatoes_Rating:Q', title = "Rotten Tomatoes Rating (%)"),
+    alt.Y('IMDB_Rating:Q', title = "IMDB Rating")
+).transform_filter('year(datum.Release_Date) > 1970'
+).properties(title = "Post-1970 Sample")
+
+```
+
+## Do-pair-share solution: plot 1  {background-color="aliceblue"}
+```{python}
+import pandas as pd
+import altair as alt
+
+movies_url = 'https://cdn.jsdelivr.net/npm/vega-datasets@1/data/movies.json'
+movies = pd.read_json(movies_url)
+
+before = alt.Chart(movies_url).mark_circle().encode(
+    alt.X('Rotten_Tomatoes_Rating:Q', title = "Rotten Tomatoes Rating (%)"),
+    alt.Y('IMDB_Rating:Q', title = "IMDB Rating")
+).transform_filter('year(datum.Release_Date) < 1970'
+).properties(title = "Pre-1970 Sample")
+
+after = alt.Chart(movies_url).mark_circle().encode(
+    alt.X('Rotten_Tomatoes_Rating:Q', title = "Rotten Tomatoes Rating (%)"),
+    alt.Y('IMDB_Rating:Q', title = "IMDB Rating")
+).transform_filter('year(datum.Release_Date) > 1970'
+).properties(title = "Post-1970 Sample")
+
+before | after
+```
+
+## Do-pair-share solution: plot 2  {background-color="aliceblue"}
+```{.python}
+alt.Chart(movies_url).mark_circle().transform_calculate(
+    pre1970='year(datum.Release_Date) < 1970'
+).encode(
+    alt.X('Rotten_Tomatoes_Rating:Q', title = "Rotten Tomatoes Rating (%)"),
+    alt.Y('IMDB_Rating:Q', title = "IMDB Rating"),
+    alt.Color('pre1970:N', title = "Pre 1970")
+)
+```
+
+## Do-pair-share solution: plot 2  {background-color="aliceblue"}
+```{python}
+alt.Chart(movies_url).mark_circle().transform_calculate(
+    pre1970='year(datum.Release_Date) < 1970'
+).encode(
+   alt.X('Rotten_Tomatoes_Rating:Q', title = "Rotten Tomatoes Rating (%)"),
+    alt.Y('IMDB_Rating:Q', title = "IMDB Rating"),
+    alt.Color('pre1970:N', title = "Pre 1970")
+)
+```
+
+The first plot is better - the second one is too crowded and many of the post-1970 points are blocked.

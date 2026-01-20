@@ -1,0 +1,37 @@
+---
+title: "Kickoff - lecture 5"
+author: "Peter Ganong and Maggie Shi"
+date-format: January 20/21, 2026
+format: 
+    revealjs:
+        slide-number: true
+        show-slide-number: all
+        self-contained: true
+---
+
+## Updates and Reminders
+
+* Quiz scores released on Canvas. Mean score for Tuesday sections is 56\%. Process question -- did you get a notification that scores were released?
+
+* Reminders
+    * Quiz today -- codespace optional, can use practice version in Canvas before lecture to test
+    * PS2 due Saturday (deferred from last week)
+    * Final [project proposal](https://canvas.uchicago.edu/courses/68386/quizzes/157996/take?preview=1) due Saturday -- click through. 
+    * Optional office hours [sign up here](https://docs.google.com/spreadsheets/d/1LdJo1yJfd1Kq01neww5iWvlgrG_r8CDpaBISagN0C-U/edit?gid=0#gid=0) 
+
+
+
+## MUD cards
+
+* Colors on altair plots
+    ```{bash}
+
+    alt.Chart(df).mark_point(size=80).encode(
+        x="x:Q",
+        y="y:Q",
+        color="group:N",
+    )
+    ```
+    
+* Write questions down AS they come up
+    * My favorite: someone wrote a question and then wrote "solved in class!". 

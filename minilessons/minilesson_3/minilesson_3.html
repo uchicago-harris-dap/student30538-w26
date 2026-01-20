@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="minilesson_3_files/libs/clipboard/clipboard.min.js"></script>
+<script src="minilesson_3_files/libs/quarto-html/tabby.min.js"></script>
+<script src="minilesson_3_files/libs/quarto-html/popper.min.js"></script>
+<script src="minilesson_3_files/libs/quarto-html/tippy.umd.min.js"></script>
+<link href="minilesson_3_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="minilesson_3_files/libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="minilesson_3_files/libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.8.26">
+
+  <meta name="author" content="Alex Lan">
+  <title>Mini-Lesson 3: DeBugging</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="minilesson_3_files/libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="minilesson_3_files/libs/revealjs/dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="minilesson_3_files/libs/revealjs/dist/theme/quarto-534cd8e3a96973385dffff3f4709048d.css">
+  <link href="minilesson_3_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="minilesson_3_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="minilesson_3_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="minilesson_3_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" class="quarto-title-block center">
+  <h1 class="title">Mini-Lesson 3: DeBugging</h1>
+
+<div class="quarto-title-authors">
+<div class="quarto-title-author">
+<div class="quarto-title-author-name">
+Alex Lan 
+</div>
+</div>
+</div>
+
+</section>
+<section id="agenda" class="title-slide slide level1 center">
+<h1>Agenda</h1>
+<ul>
+<li>Reading error messages</li>
+<li>De-Bugging Tips</li>
+<li>VS Code Debugger</li>
+<li>Appendix: Common Errors</li>
+</ul>
+<aside class="notes">
+<p>You already learned a debugging skill in the previous minilesson on reproducible examples: test the problematic code in isolation before putting it back in context.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+
+<section>
+<section id="reading-error-messages" class="title-slide slide level1 center">
+<h1>Reading Error Messages</h1>
+
+</section>
+<section class="slide level2">
+
+<h3 id="traceback">Traceback</h3>
+<ul>
+<li>the sequence of function calls that led to the error.</li>
+<li>Start at the bottom: the last line usually gives the error type and description (e.g., <code>TypeError: unsupported operand type</code>)</li>
+<li>The lines above show you the “call stack” - the path your code took to get to the error (which line, which function)</li>
+</ul>
+<aside class="notes">
+<p>When Python encounters an error, it prints a traceback. This is a detailed report showing the sequence of function calls that led to the error. The most important information is at the BOTTOM - that’s where you’ll find the actual error type and message</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<h3 id="example">Example</h3>
+<div id="2e399649" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href=""></a><span class="kw">def</span> calculate_total(value_1, value_2):</span>
+<span id="cb1-2"><a href=""></a>    <span class="cf">return</span> value_1 <span class="op">+</span> value_2</span>
+<span id="cb1-3"><a href=""></a></span>
+<span id="cb1-4"><a href=""></a><span class="co"># This will cause the TypeError</span></span>
+<span id="cb1-5"><a href=""></a>result <span class="op">=</span> calculate_total(<span class="dv">10</span>, <span class="st">"twenty"</span>)</span>
+<span id="cb1-6"><a href=""></a><span class="bu">print</span>(result)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-error">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">TypeError</span>                                 Traceback (most recent call last)
+<span class="ansi-green-fg">&lt;ipython-input-1-7c15da5d3ecb&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
+<span class="ansi-green-fg ansi-bold">      3</span> 
+<span class="ansi-green-fg ansi-bold">      4</span> <span class="ansi-red-fg"># This will cause the TypeError</span>
+<span class="ansi-green-fg">----&gt; 5</span><span class="ansi-red-fg"> </span>result <span class="ansi-blue-fg">=</span> calculate_total<span class="ansi-blue-fg">(</span><span class="ansi-cyan-fg">10</span><span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">"twenty"</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-fg ansi-bold">      6</span> print<span class="ansi-blue-fg">(</span>result<span class="ansi-blue-fg">)</span>
+
+<span class="ansi-green-fg">&lt;ipython-input-1-7c15da5d3ecb&gt;</span> in <span class="ansi-cyan-fg">calculate_total</span><span class="ansi-blue-fg">(value_1, value_2)</span>
+<span class="ansi-green-fg ansi-bold">      1</span> <span class="ansi-green-fg">def</span> calculate_total<span class="ansi-blue-fg">(</span>value_1<span class="ansi-blue-fg">,</span> value_2<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-fg">----&gt; 2</span><span class="ansi-red-fg">     </span><span class="ansi-green-fg">return</span> value_1 <span class="ansi-blue-fg">+</span> value_2
+<span class="ansi-green-fg ansi-bold">      3</span> 
+<span class="ansi-green-fg ansi-bold">      4</span> <span class="ansi-red-fg"># This will cause the TypeError</span>
+<span class="ansi-green-fg ansi-bold">      5</span> result <span class="ansi-blue-fg">=</span> calculate_total<span class="ansi-blue-fg">(</span><span class="ansi-cyan-fg">10</span><span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">"twenty"</span><span class="ansi-blue-fg">)</span>
+
+<span class="ansi-red-fg">TypeError</span>: unsupported operand type(s) for +: 'int' and 'str'</pre>
+</div>
+</div>
+</div>
+<aside class="notes">
+<p>Bottom line: The error type and message (TypeError) Next arrow up: Shows the exact line where the error occurred (<code>return value_1 + value_2</code>) Next line up: Shows which function was called (<code>calculate_total</code>) Top arrow: Shows where the function was called from (line 41 in the script)</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section></section>
+<section>
+<section id="debugging-techniques" class="title-slide slide level1 center">
+<h1>Debugging Techniques</h1>
+
+</section>
+<section class="slide level2">
+
+<h3 id="use-chatgpt">Use ChatGPT</h3>
+<ul>
+<li>Copy the full error message (traceback) - don’t just copy the last line</li>
+<li>Include relevant code context - show the function or code block where the error occurs</li>
+<li>Be specific about what you’re trying to do.</li>
+<li>Understand what ChatGPT suggests before using it. ChatGPT can be wrong.</li>
+</ul>
+<p>Example prompt structure: “I’m getting this Python error: [paste error]. I’m trying to [describe goal]. Here’s my code: [paste relevant code].”</p>
+<!--
+```
+TypeError: can't multiply sequence by non-int of type 'float'
+```
+![](images/ChatGPT.png)
+-->
+</section>
+<section class="slide level2">
+
+<h3 id="print-statements">Print Statements</h3>
+<ul>
+<li>Use <code>print()</code> to output variable states at different points in your code</li>
+</ul>
+<div id="687beb20" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href=""></a><span class="kw">def</span> multiplier(a, b, c):</span>
+<span id="cb2-2"><a href=""></a>  <span class="co">"""</span></span>
+<span id="cb2-3"><a href=""></a><span class="co">  Multiply each variable by each other in order then sum</span></span>
+<span id="cb2-4"><a href=""></a><span class="co">  """</span></span>
+<span id="cb2-5"><a href=""></a>  mult_1 <span class="op">=</span> a <span class="op">*</span> b</span>
+<span id="cb2-6"><a href=""></a>  mult_2 <span class="op">=</span> a <span class="op">**</span> c</span>
+<span id="cb2-7"><a href=""></a>  mult_3 <span class="op">=</span> b <span class="op">*</span> c</span>
+<span id="cb2-8"><a href=""></a></span>
+<span id="cb2-9"><a href=""></a>  <span class="cf">return</span> mult_1 <span class="op">+</span> mult_2 <span class="op">+</span> mult_3</span>
+<span id="cb2-10"><a href=""></a></span>
+<span id="cb2-11"><a href=""></a><span class="bu">print</span> (multiplier(<span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">5</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>53</code></pre>
+</div>
+</div>
+<p><em>That’s wrong, we were expecting 6 + 10 + 15 = 21</em></p>
+</section>
+<section class="slide level2">
+
+<h3 id="print-statements-1">Print Statements</h3>
+<div id="8a458640" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href=""></a><span class="kw">def</span> multiplier(a, b, c):</span>
+<span id="cb4-2"><a href=""></a>  <span class="co">"""</span></span>
+<span id="cb4-3"><a href=""></a><span class="co">  Multiply each variable by each other in order then sum</span></span>
+<span id="cb4-4"><a href=""></a><span class="co">  """</span></span>
+<span id="cb4-5"><a href=""></a>  mult_1 <span class="op">=</span> a <span class="op">*</span> b</span>
+<span id="cb4-6"><a href=""></a>  <span class="bu">print</span>(<span class="ss">f"mult_1 = </span><span class="sc">{</span>mult_1<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb4-7"><a href=""></a>  mult_2 <span class="op">=</span> a <span class="op">**</span> c</span>
+<span id="cb4-8"><a href=""></a>  <span class="bu">print</span>(<span class="ss">f"mult_2 = </span><span class="sc">{</span>mult_2<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb4-9"><a href=""></a>  mult_3 <span class="op">=</span> b <span class="op">*</span> c</span>
+<span id="cb4-10"><a href=""></a>  <span class="bu">print</span>(<span class="ss">f"mult_3 = </span><span class="sc">{</span>mult_3<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb4-11"><a href=""></a></span>
+<span id="cb4-12"><a href=""></a>  <span class="cf">return</span> mult_1 <span class="op">+</span> mult_2 <span class="op">+</span> mult_3</span>
+<span id="cb4-13"><a href=""></a></span>
+<span id="cb4-14"><a href=""></a><span class="bu">print</span> (multiplier(<span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">5</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>mult_1 = 6
+mult_2 = 32
+mult_3 = 15
+53</code></pre>
+</div>
+</div>
+<p><em>Looks like our issue is in mult_2</em></p>
+<aside class="notes">
+<p>Remember to delete your print statements after finding your error</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section></section>
+<section>
+<section id="vs-code-debugger" class="title-slide slide level1 center">
+<h1>VS Code Debugger</h1>
+
+</section>
+<section class="slide level2">
+
+<h3 id="debugging-with-vscode">Debugging with VScode</h3>
+
+<img data-src="images/vscode_debug.png" class="r-stretch"></section>
+<section class="slide level2">
+
+<h3 id="key-elements-in-the-debugger">Key elements in the debugger</h3>
+<ul>
+<li>Breakpoint (red dot): where the debugging execution will pause</li>
+<li>Debug icon (left sidebar): Click to open the debug panel</li>
+<li>Yellow line: Shows the next line to execute</li>
+<li>Debug controls (top arrows):
+<ul>
+<li>Step Over (arrow over dot): Execute current line</li>
+<li>Step Into (arrow down): Go into function calls</li>
+<li>Step Out (arrow up): Exit current function and continue</li>
+</ul></li>
+</ul>
+<aside class="notes">
+<p>VSCode has a built-in debugger that lets you step through your code line by line. (demonstrate in debug_demo.py)</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<h3 id="vs-code-debugger-the-workflow">VS Code debugger: the workflow</h3>
+<ol type="1">
+<li>Set a breakpoint: click the left margin next to a line number<br>
+</li>
+<li>Open Run and Debug: your code runs until it hits the breakpoint.<br>
+</li>
+<li>Step through execution: use the top debug controls.<br>
+</li>
+<li>Inspect state: check Variables / Watch / Call Stack
+<ul>
+<li>Variables: everything in the current scope<br>
+</li>
+<li>Watch: expressions you pin that update each time you step<br>
+</li>
+<li>Call Stack: how you got here (which functions were called)</li>
+</ul></li>
+</ol>
+</section>
+<section class="slide level2">
+
+<h3 id="recap">Recap</h3>
+<ul>
+<li>Read error messages (tracebacks)
+<ul>
+<li>Start at the bottom line for the error type + message</li>
+</ul></li>
+<li>Debugging techniques
+<ul>
+<li>Use ChatGPT effectively: paste the full traceback + relevant code + your goal</li>
+<li>Use print statements to check intermediate values</li>
+</ul></li>
+<li>VS Code debugger
+<ul>
+<li>Set a breakpoint, Run and Debug, step through, inspect debug panel</li>
+</ul></li>
+</ul>
+</section></section>
+<section>
+<section id="appendix-common-python-errors" class="title-slide slide level1 center">
+<h1>Appendix: Common Python Errors</h1>
+
+</section>
+<section class="slide level2">
+
+<h3 id="syntax-error">Syntax Error</h3>
+<ul>
+<li>Missing closing parentheses, brackets, or quotes:</li>
+</ul>
+<div id="272152f6" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href=""></a><span class="bu">print</span>(<span class="st">"Hello World  # Incorrect</span></span>
+<span id="cb6-2"><a href=""></a><span class="er">print</span>(<span class="st">"Hello World"</span>)  <span class="co"># Correct</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-error">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-cyan-fg">  File </span><span class="ansi-green-fg">"&lt;ipython-input-4-5dae628a90fc&gt;"</span><span class="ansi-cyan-fg">, line </span><span class="ansi-green-fg">1</span>
+<span class="ansi-red-fg">    print("Hello World  # Incorrect</span>
+                                   ^
+<span class="ansi-red-fg">SyntaxError</span><span class="ansi-red-fg">:</span> EOL while scanning string literal
+</pre>
+</div>
+</div>
+</div>
+<aside class="notes">
+<p>Syntax errors occur when Python can’t parse your code - the code structure itself is invalid. The incorrect example is missing the closing quote. Fix: check that quotes, parentheses, and brackets are properly paired. Your code editor will highlight for you.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<h3 id="indentation-error">Indentation Error</h3>
+<ul>
+<li>Indentation errors in loops or conditionals:</li>
+</ul>
+<div id="fd466d95" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href=""></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">5</span>):</span>
+<span id="cb7-2"><a href=""></a><span class="bu">print</span>(i)  <span class="co"># Incorrect: no indentation</span></span>
+<span id="cb7-3"><a href=""></a></span>
+<span id="cb7-4"><a href=""></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">5</span>):</span>
+<span id="cb7-5"><a href=""></a>    <span class="bu">print</span>(i)  <span class="co"># Correct</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-error">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-cyan-fg">  File </span><span class="ansi-green-fg">"&lt;ipython-input-5-4b6f59675b9c&gt;"</span><span class="ansi-cyan-fg">, line </span><span class="ansi-green-fg">2</span>
+<span class="ansi-red-fg">    print(i)  # Incorrect: no indentation</span>
+    ^
+<span class="ansi-red-fg">IndentationError</span><span class="ansi-red-fg">:</span> expected an indented block
+</pre>
+</div>
+</div>
+</div>
+<aside class="notes">
+<p>Python uses indentation to define code blocks. After a colon <code>:</code>, Python expects the next line to be indented. In the incorrect example, <code>print(i)</code> is not indented, so Python doesn’t know it’s part of the <code>for</code> loop. Fix: After any line ending with <code>:</code>, indent the next line(s). Use 4 spaces or Tab.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<p><strong>Logical Error</strong>: ‘and’ vs ‘&amp;’ in element-wise comparisons:</p>
+<div id="3c211853" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href=""></a>df <span class="op">=</span> pd.DataFrame({<span class="st">'A'</span>: [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>], <span class="st">'B'</span>: [<span class="dv">5</span>, <span class="dv">6</span>, <span class="dv">7</span>]})</span>
+<span id="cb8-2"><a href=""></a></span>
+<span id="cb8-3"><a href=""></a>df[(df[<span class="st">'A'</span>] <span class="op">&gt;</span> <span class="dv">1</span>) <span class="kw">and</span> (df[<span class="st">'B'</span>] <span class="op">&gt;</span> <span class="dv">2</span>)]  <span class="co"># Incorrect</span></span>
+<span id="cb8-4"><a href=""></a>df[(df[<span class="st">'A'</span>] <span class="op">&gt;</span> <span class="dv">1</span>) <span class="op">&amp;</span> (df[<span class="st">'B'</span>] <span class="op">&gt;</span> <span class="dv">2</span>)]  <span class="co"># Correct</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-error">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">ValueError</span>                                Traceback (most recent call last)
+<span class="ansi-green-fg">&lt;ipython-input-7-9c42d3102bec&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
+<span class="ansi-green-fg ansi-bold">      1</span> df <span class="ansi-blue-fg">=</span> pd<span class="ansi-blue-fg">.</span>DataFrame<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">{</span><span class="ansi-blue-fg">'A'</span><span class="ansi-blue-fg">:</span> <span class="ansi-blue-fg">[</span><span class="ansi-cyan-fg">0</span><span class="ansi-blue-fg">,</span> <span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">,</span> <span class="ansi-cyan-fg">2</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">'B'</span><span class="ansi-blue-fg">:</span> <span class="ansi-blue-fg">[</span><span class="ansi-cyan-fg">5</span><span class="ansi-blue-fg">,</span> <span class="ansi-cyan-fg">6</span><span class="ansi-blue-fg">,</span> <span class="ansi-cyan-fg">7</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">}</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-fg ansi-bold">      2</span> 
+<span class="ansi-green-fg">----&gt; 3</span><span class="ansi-red-fg"> </span>df<span class="ansi-blue-fg">[</span><span class="ansi-blue-fg">(</span>df<span class="ansi-blue-fg">[</span><span class="ansi-blue-fg">'A'</span><span class="ansi-blue-fg">]</span> <span class="ansi-blue-fg">&gt;</span> <span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">)</span> <span class="ansi-green-fg">and</span> <span class="ansi-blue-fg">(</span>df<span class="ansi-blue-fg">[</span><span class="ansi-blue-fg">'B'</span><span class="ansi-blue-fg">]</span> <span class="ansi-blue-fg">&gt;</span> <span class="ansi-cyan-fg">2</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">]</span>  <span class="ansi-red-fg"># Incorrect</span>
+<span class="ansi-green-fg ansi-bold">      4</span> df<span class="ansi-blue-fg">[</span><span class="ansi-blue-fg">(</span>df<span class="ansi-blue-fg">[</span><span class="ansi-blue-fg">'A'</span><span class="ansi-blue-fg">]</span> <span class="ansi-blue-fg">&gt;</span> <span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">&amp;</span> <span class="ansi-blue-fg">(</span>df<span class="ansi-blue-fg">[</span><span class="ansi-blue-fg">'B'</span><span class="ansi-blue-fg">]</span> <span class="ansi-blue-fg">&gt;</span> <span class="ansi-cyan-fg">2</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">]</span>  <span class="ansi-red-fg"># Correct</span>
+
+<span class="ansi-green-fg">~/opt/anaconda3/lib/python3.8/site-packages/pandas/core/generic.py</span> in <span class="ansi-cyan-fg">__nonzero__</span><span class="ansi-blue-fg">(self)</span>
+<span class="ansi-green-fg ansi-bold">   1327</span> 
+<span class="ansi-green-fg ansi-bold">   1328</span>     <span class="ansi-green-fg">def</span> __nonzero__<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-fg">-&gt; 1329</span><span class="ansi-red-fg">         raise ValueError(
+</span><span class="ansi-green-fg ansi-bold">   1330</span>             <span class="ansi-blue-fg">f"The truth value of a {type(self).__name__} is ambiguous. "</span>
+<span class="ansi-green-fg ansi-bold">   1331</span>             <span class="ansi-blue-fg">"Use a.empty, a.bool(), a.item(), a.any() or a.all()."</span>
+
+<span class="ansi-red-fg">ValueError</span>: The truth value of a Series is ambiguous. Use a.empty, a.bool(), a.item(), a.any() or a.all().</pre>
+</div>
+</div>
+</div>
+<aside class="notes">
+<p><code>and</code> is for single True/False statement, but <code>&amp;</code> (ampersand) works element-wise on arrays/Series. When filtering DataFrames, you need element-wise comparison. Fix: Use <code>&amp;</code> for element-wise boolean operations on pandas objects. Also use <code>|</code> (say “pipe” or “or symbol”) instead of <code>or</code>. Always wrap each condition in parentheses: <code>(condition1) &amp; (condition2)</code></p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<h3 id="attributeerror">AttributeError</h3>
+<ul>
+<li>Using a wrong method (<code>.average()</code> on a DataFrame):</li>
+</ul>
+<div id="8c4fab1c" class="cell" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href=""></a>df[<span class="st">'A'</span>].average()  <span class="co"># Incorrect, should use df.mean()</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-error">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
+<span class="ansi-green-fg">&lt;ipython-input-8-b52adb53a114&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
+<span class="ansi-green-fg">----&gt; 1</span><span class="ansi-red-fg"> </span>df<span class="ansi-blue-fg">[</span><span class="ansi-blue-fg">'A'</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">.</span>average<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span>  <span class="ansi-red-fg"># Incorrect, should use df.mean()</span>
+
+<span class="ansi-green-fg">~/opt/anaconda3/lib/python3.8/site-packages/pandas/core/generic.py</span> in <span class="ansi-cyan-fg">__getattr__</span><span class="ansi-blue-fg">(self, name)</span>
+<span class="ansi-green-fg ansi-bold">   5137</span>             <span class="ansi-green-fg">if</span> self<span class="ansi-blue-fg">.</span>_info_axis<span class="ansi-blue-fg">.</span>_can_hold_identifiers_and_holds_name<span class="ansi-blue-fg">(</span>name<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-fg ansi-bold">   5138</span>                 <span class="ansi-green-fg">return</span> self<span class="ansi-blue-fg">[</span>name<span class="ansi-blue-fg">]</span>
+<span class="ansi-green-fg">-&gt; 5139</span><span class="ansi-red-fg">             </span><span class="ansi-green-fg">return</span> object<span class="ansi-blue-fg">.</span>__getattribute__<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> name<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-fg ansi-bold">   5140</span> 
+<span class="ansi-green-fg ansi-bold">   5141</span>     <span class="ansi-green-fg">def</span> __setattr__<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> name<span class="ansi-blue-fg">:</span> str<span class="ansi-blue-fg">,</span> value<span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">-&gt;</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">:</span>
+
+<span class="ansi-red-fg">AttributeError</span>: 'Series' object has no attribute 'average'</pre>
+</div>
+</div>
+</div>
+<aside class="notes">
+<p>AttributeError occurs when you try to access a method that doesn’t exist on an object. Series doesn’t have an <code>.average()</code> method. Error will say: <code>AttributeError: 'Series' object has no attribute 'average'</code> Fix: Use the correct method name - <code>.mean()</code> instead of <code>.average()</code>. If you’re not sure what methods are available, use <code>dir(df['A'])</code></p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<p><strong>KeyError</strong>: access a column that doesn’t exist</p>
+<div id="0a09b930" class="cell" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href=""></a>df[<span class="st">'C'</span>]  <span class="co"># KeyError, C is not in the DataFrame</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-error">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">KeyError</span>                                  Traceback (most recent call last)
+<span class="ansi-green-fg">~/opt/anaconda3/lib/python3.8/site-packages/pandas/core/indexes/base.py</span> in <span class="ansi-cyan-fg">get_loc</span><span class="ansi-blue-fg">(self, key, method, tolerance)</span>
+<span class="ansi-green-fg ansi-bold">   2894</span>             <span class="ansi-green-fg">try</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-fg">-&gt; 2895</span><span class="ansi-red-fg">                 </span><span class="ansi-green-fg">return</span> self<span class="ansi-blue-fg">.</span>_engine<span class="ansi-blue-fg">.</span>get_loc<span class="ansi-blue-fg">(</span>casted_key<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-fg ansi-bold">   2896</span>             <span class="ansi-green-fg">except</span> KeyError <span class="ansi-green-fg">as</span> err<span class="ansi-blue-fg">:</span>
+
+<span class="ansi-green-fg">pandas/_libs/index.pyx</span> in <span class="ansi-cyan-fg">pandas._libs.index.IndexEngine.get_loc</span><span class="ansi-blue-fg">()</span>
+
+<span class="ansi-green-fg">pandas/_libs/index.pyx</span> in <span class="ansi-cyan-fg">pandas._libs.index.IndexEngine.get_loc</span><span class="ansi-blue-fg">()</span>
+
+<span class="ansi-green-fg">pandas/_libs/hashtable_class_helper.pxi</span> in <span class="ansi-cyan-fg">pandas._libs.hashtable.PyObjectHashTable.get_item</span><span class="ansi-blue-fg">()</span>
+
+<span class="ansi-green-fg">pandas/_libs/hashtable_class_helper.pxi</span> in <span class="ansi-cyan-fg">pandas._libs.hashtable.PyObjectHashTable.get_item</span><span class="ansi-blue-fg">()</span>
+
+<span class="ansi-red-fg">KeyError</span>: 'C'
+
+The above exception was the direct cause of the following exception:
+
+<span class="ansi-red-fg">KeyError</span>                                  Traceback (most recent call last)
+<span class="ansi-green-fg">&lt;ipython-input-9-3ae91f975e46&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
+<span class="ansi-green-fg">----&gt; 1</span><span class="ansi-red-fg"> </span>df<span class="ansi-blue-fg">[</span><span class="ansi-blue-fg">'C'</span><span class="ansi-blue-fg">]</span>  <span class="ansi-red-fg"># KeyError, C is not in the DataFrame</span>
+
+<span class="ansi-green-fg">~/opt/anaconda3/lib/python3.8/site-packages/pandas/core/frame.py</span> in <span class="ansi-cyan-fg">__getitem__</span><span class="ansi-blue-fg">(self, key)</span>
+<span class="ansi-green-fg ansi-bold">   2900</span>             <span class="ansi-green-fg">if</span> self<span class="ansi-blue-fg">.</span>columns<span class="ansi-blue-fg">.</span>nlevels <span class="ansi-blue-fg">&gt;</span> <span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-fg ansi-bold">   2901</span>                 <span class="ansi-green-fg">return</span> self<span class="ansi-blue-fg">.</span>_getitem_multilevel<span class="ansi-blue-fg">(</span>key<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-fg">-&gt; 2902</span><span class="ansi-red-fg">             </span>indexer <span class="ansi-blue-fg">=</span> self<span class="ansi-blue-fg">.</span>columns<span class="ansi-blue-fg">.</span>get_loc<span class="ansi-blue-fg">(</span>key<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-fg ansi-bold">   2903</span>             <span class="ansi-green-fg">if</span> is_integer<span class="ansi-blue-fg">(</span>indexer<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-fg ansi-bold">   2904</span>                 indexer <span class="ansi-blue-fg">=</span> <span class="ansi-blue-fg">[</span>indexer<span class="ansi-blue-fg">]</span>
+
+<span class="ansi-green-fg">~/opt/anaconda3/lib/python3.8/site-packages/pandas/core/indexes/base.py</span> in <span class="ansi-cyan-fg">get_loc</span><span class="ansi-blue-fg">(self, key, method, tolerance)</span>
+<span class="ansi-green-fg ansi-bold">   2895</span>                 <span class="ansi-green-fg">return</span> self<span class="ansi-blue-fg">.</span>_engine<span class="ansi-blue-fg">.</span>get_loc<span class="ansi-blue-fg">(</span>casted_key<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-fg ansi-bold">   2896</span>             <span class="ansi-green-fg">except</span> KeyError <span class="ansi-green-fg">as</span> err<span class="ansi-blue-fg">:</span>
+<span class="ansi-green-fg">-&gt; 2897</span><span class="ansi-red-fg">                 </span><span class="ansi-green-fg">raise</span> KeyError<span class="ansi-blue-fg">(</span>key<span class="ansi-blue-fg">)</span> <span class="ansi-green-fg">from</span> err
+<span class="ansi-green-fg ansi-bold">   2898</span> 
+<span class="ansi-green-fg ansi-bold">   2899</span>         <span class="ansi-green-fg">if</span> tolerance <span class="ansi-green-fg">is</span> <span class="ansi-green-fg">not</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">:</span>
+
+<span class="ansi-red-fg">KeyError</span>: 'C'</pre>
+</div>
+</div>
+</div>
+<aside class="notes">
+<p>KeyError occurs when you try to access a column that doesn’t exist in a DataFrame. Fix: Check what columns actually exist using <code>df.columns</code> or <code>df.info()</code>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<h3 id="quarto-rendering-errors">Quarto Rendering Errors</h3>
+<ul>
+<li>For Quarto you must check the terminal for error messages</li>
+</ul>
+
+
+<img data-src="images/Quarto_yaml.png" class="r-stretch"></section></section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="minilesson_3_files/libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="minilesson_3_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="minilesson_3_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="minilesson_3_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="minilesson_3_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="minilesson_3_files/libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="minilesson_3_files/libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="minilesson_3_files/libs/revealjs/plugin/search/search.js"></script>
+  <script src="minilesson_3_files/libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="minilesson_3_files/libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': true,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'none',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'none',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1050,
+
+        height: 700,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0.1,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+          const outerScaffold = trigger.parentElement.cloneNode(true);
+          const codeEl = outerScaffold.querySelector('code');
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp('/' + window.location.host + '/');
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
+    
+
+</body></html>

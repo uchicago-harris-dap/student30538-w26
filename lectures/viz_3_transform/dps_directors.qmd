@@ -1,0 +1,24 @@
+
+```{python}
+import pandas as pd
+import altair as alt    
+movies_url = 'https://cdn.jsdelivr.net/npm/vega-datasets@1/data/movies.json'
+movies = pd.read_json(movies_url)
+
+alt.Chart(movies_url).mark_bar().transform_filter(
+    'datum.Director != null'
+).transform_aggregate(
+    Gross='sum(Worldwide_Gross)',
+    groupby=['Director']
+).transform_window(
+    Rank='rank()',
+    sort=[alt.SortField('Gross', order='descending')]
+).transform_filter(
+    'datum.Rank < 10'
+).encode(
+    alt.X('Gross:Q', title = "Worldwide Gross ($)"),
+    alt.Y('Director:N', sort=alt.EncodingSortField(
+        op='max', field='Gross', order='descending'
+    ), title = "Director")
+)
+```

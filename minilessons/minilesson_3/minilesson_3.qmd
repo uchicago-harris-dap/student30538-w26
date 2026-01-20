@@ -1,0 +1,289 @@
+---
+title: "Mini-Lesson 3: DeBugging"
+author: "Alex Lan"
+format:
+  revealjs:
+    slide-number: true
+    chalkboard: false 
+    preview-links: auto
+execute:
+  eval: true
+  echo: true
+---
+
+# Agenda
+
+- Reading error messages
+- De-Bugging Tips
+- VS Code Debugger
+- Appendix: Common Errors
+
+::: {.notes}
+You already learned a debugging skill in the previous minilesson on reproducible examples:
+test the problematic code in isolation before putting it back in context.
+:::
+
+# Reading Error Messages
+
+---
+
+### Traceback
+
+- the sequence of function calls that led to the error.
+- Start at the bottom: the last line usually gives the error type and description (e.g., `TypeError: unsupported operand type`)
+- The lines above show you the "call stack" - the path your code took to get to the error (which line, which function)
+
+::: {.notes}
+When Python encounters an error, it prints a traceback. This is a detailed report showing the sequence of function calls that led to the error.
+The most important information is at the BOTTOM - that's where you'll find the actual error type and message
+:::
+
+---
+
+### Example
+
+```{python}
+#| error: true
+
+def calculate_total(value_1, value_2):
+    return value_1 + value_2
+
+# This will cause the TypeError
+result = calculate_total(10, "twenty")
+print(result)
+```
+
+::: {.notes}
+
+Bottom line: The error type and message (TypeError)
+Next arrow up: Shows the exact line where the error occurred (`return value_1 + value_2`)
+Next line up: Shows which function was called (`calculate_total`)
+Top arrow: Shows where the function was called from (line 41 in the script)
+
+:::
+
+# Debugging Techniques
+
+---
+
+### Use ChatGPT
+
+- Copy the full error message (traceback) - don't just copy the last line
+- Include relevant code context - show the function or code block where the error occurs
+- Be specific about what you're trying to do.
+- Understand what ChatGPT suggests before using it. ChatGPT can be wrong. 
+
+Example prompt structure:
+"I'm getting this Python error: [paste error]. I'm trying to [describe goal]. Here's my code: [paste relevant code]."
+
+<!--
+```
+TypeError: can't multiply sequence by non-int of type 'float'
+```
+![](images/ChatGPT.png)
+-->
+
+---
+
+### Print Statements
+
+- Use `print()` to output variable states at different points in your code
+```{python}
+def multiplier(a, b, c):
+  """
+  Multiply each variable by each other in order then sum
+  """
+  mult_1 = a * b
+  mult_2 = a ** c
+  mult_3 = b * c
+
+  return mult_1 + mult_2 + mult_3
+
+print (multiplier(2, 3, 5))
+```
+
+*That's wrong, we were expecting 6 + 10 + 15 = 21*
+
+---
+
+### Print Statements
+
+```{python}
+def multiplier(a, b, c):
+  """
+  Multiply each variable by each other in order then sum
+  """
+  mult_1 = a * b
+  print(f"mult_1 = {mult_1}")
+  mult_2 = a ** c
+  print(f"mult_2 = {mult_2}")
+  mult_3 = b * c
+  print(f"mult_3 = {mult_3}")
+
+  return mult_1 + mult_2 + mult_3
+
+print (multiplier(2, 3, 5))
+```
+
+*Looks like our issue is in mult_2*
+
+
+::: {.notes}
+Remember to delete your print statements after finding your error
+:::
+
+# VS Code Debugger
+
+---
+
+### Debugging with VScode
+
+![](images/vscode_debug.png)
+
+---
+
+### Key elements in the debugger
+
+- Breakpoint (red dot): where the debugging execution will pause
+- Debug icon (left sidebar): Click to open the debug panel
+- Yellow line: Shows the next line to execute
+- Debug controls (top arrows): 
+  - Step Over (arrow over dot): Execute current line
+  - Step Into (arrow down): Go into function calls
+  - Step Out (arrow up): Exit current function and continue
+
+::: {.notes}
+VSCode has a built-in debugger that lets you step through your code line by line.
+(demonstrate in debug_demo.py)
+:::
+---
+
+### VS Code debugger: the workflow
+
+1. Set a breakpoint: click the left margin next to a line number  
+2. Open Run and Debug: your code runs until it hits the breakpoint.  
+3. Step through execution: use the top debug controls.  
+4. Inspect state: check Variables / Watch / Call Stack
+   - Variables: everything in the current scope  
+   - Watch: expressions you pin that update each time you step  
+   - Call Stack: how you got here (which functions were called)
+
+---
+
+### Recap
+
+- Read error messages (tracebacks)
+  - Start at the bottom line for the error type + message
+
+- Debugging techniques
+  - Use ChatGPT effectively: paste the full traceback + relevant code + your goal
+  - Use print statements to check intermediate values
+
+- VS Code debugger
+  - Set a breakpoint, Run and Debug, step through, inspect debug panel
+
+
+# Appendix: Common Python Errors
+
+---
+
+### Syntax Error
+
+- Missing closing parentheses, brackets, or quotes:
+
+```{python}
+#| error: true
+
+print("Hello World  # Incorrect
+print("Hello World")  # Correct
+```
+
+::: {.notes}
+Syntax errors occur when Python can't parse your code - the code structure itself is invalid.
+The incorrect example is missing the closing quote.
+Fix: check that quotes, parentheses, and brackets are properly paired. Your code editor will highlight for you.
+:::
+
+---
+
+### Indentation Error
+- Indentation errors in loops or conditionals:
+```{python}
+#| error: true
+
+for i in range(5):
+print(i)  # Incorrect: no indentation
+
+for i in range(5):
+    print(i)  # Correct
+```
+
+::: {.notes}
+Python uses indentation to define code blocks. After a colon `:`, Python expects the next line to be indented.
+In the incorrect example, `print(i)` is not indented, so Python doesn't know it's part of the `for` loop.
+Fix: After any line ending with `:`, indent the next line(s). Use 4 spaces or Tab.
+:::
+
+---
+
+**Logical Error**: 'and' vs '&' in element-wise comparisons:
+
+```{python}
+#| echo: false
+
+import pandas as pd
+```
+
+```{python}
+#| error: true
+
+df = pd.DataFrame({'A': [0, 1, 2], 'B': [5, 6, 7]})
+
+df[(df['A'] > 1) and (df['B'] > 2)]  # Incorrect
+df[(df['A'] > 1) & (df['B'] > 2)]  # Correct
+```
+
+::: {.notes}
+`and` is for single True/False statement, but `&` (ampersand) works element-wise on arrays/Series. When filtering DataFrames, you need element-wise comparison. 
+Fix: Use `&` for element-wise boolean operations on pandas objects. Also use `|` (say "pipe" or "or symbol") instead of `or`.
+Always wrap each condition in parentheses: `(condition1) & (condition2)`
+:::
+
+---
+
+### AttributeError
+
+- Using a wrong method (`.average()` on a DataFrame):
+```{python}
+#| error: true
+
+df['A'].average()  # Incorrect, should use df.mean()
+```
+
+::: {.notes}
+AttributeError occurs when you try to access a method that doesn't exist on an object.
+Series doesn't have an `.average()` method. Error will say: `AttributeError: 'Series' object has no attribute 'average'`
+Fix: Use the correct method name - `.mean()` instead of `.average()`. If you're not sure what methods are available, use `dir(df['A'])` 
+:::
+
+---
+
+**KeyError**: access a column that doesn't exist
+```{python}
+#| error: true
+
+df['C']  # KeyError, C is not in the DataFrame
+```
+
+::: {.notes}
+KeyError occurs when you try to access a column that doesn't exist in a DataFrame.
+Fix: Check what columns actually exist using `df.columns` or `df.info()`. 
+:::
+
+---
+
+### Quarto Rendering Errors
+
+- For Quarto you must check the terminal for error messages
+
+![](images/Quarto_yaml.png)

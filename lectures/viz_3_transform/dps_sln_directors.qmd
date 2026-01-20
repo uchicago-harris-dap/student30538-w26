@@ -1,0 +1,67 @@
+---
+title: "Visualization (Data Transformation)"
+author: "Peter Ganong and Maggie Shi"
+date: today
+date-format: long
+format: 
+  revealjs:
+    slide-number: true
+    show-slide-number: all
+    self-contained: true
+---
+
+
+## `transform_window`: do-pair-share {background-color="aliceblue"}
+```{.python}
+import pandas as pd
+import altair as alt    
+movies_url = 'https://cdn.jsdelivr.net/npm/vega-datasets@1/data/movies.json'
+movies = pd.read_json(movies_url)
+alt.Chart(movies_url).mark_bar().transform_filter(
+    'datum.Director != null'
+).transform_aggregate(
+    Gross='average(Worldwide_Gross)',
+    groupby=['Director']
+).transform_window(
+    Rank='rank()',
+    sort=[alt.SortField('Gross', order='descending')]
+).transform_filter(
+    'datum.Rank < 10'
+).encode(
+    alt.X('Gross:Q', title = "Worldwide Gross ($)"),
+    alt.Y('Director:N', sort=alt.EncodingSortField(
+        op='max', field='Gross', order='descending'
+    ), title = "Director")
+)
+```
+
+
+## `transform_window`: do-pair-share {background-color="aliceblue"}
+```{python}
+import pandas as pd
+import altair as alt    
+movies_url = 'https://cdn.jsdelivr.net/npm/vega-datasets@1/data/movies.json'
+movies = pd.read_json(movies_url)
+alt.Chart(movies_url).mark_bar().transform_filter(
+    'datum.Director != null'
+).transform_aggregate(
+    Gross='average(Worldwide_Gross)',
+    groupby=['Director']
+).transform_window(
+    Rank='rank()',
+    sort=[alt.SortField('Gross', order='descending')]
+).transform_filter(
+    'datum.Rank < 10'
+).encode(
+    alt.X('Gross:Q', title = "Worldwide Gross ($)"),
+    alt.Y('Director:N', sort=alt.EncodingSortField(
+        op='max', field='Gross', order='descending'
+    ), title = "Director")
+)
+```
+
+
+
+## `transform_window`: do-pair-share {background-color="aliceblue"}
+
+Solution: get David Yates (last four Harry Potter movies) and also James Cameron (Titanic, Avatar)
