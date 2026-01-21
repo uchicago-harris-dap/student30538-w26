@@ -27,7 +27,7 @@ format:
 
 * The data was collected by the [Gapminder Foundation](https://www.gapminder.org/) and shared in [Hans Rosling's fantastic TED talk](https://www.youtube.com/watch?v=hVimVzgtD6w). 
 
-* Roadmap: load data and review first five rows
+* Roadmap: load data and review first four rows
 
 ## Load data
 Let's first load the dataset from the [vega-datasets](https://github.com/vega/vega-datasets) collection into a Pandas data frame.
@@ -97,7 +97,7 @@ Core **data types**, as recognized by `altair`:
 * *Nominal* data consists of **unordered** category names. 
     * Also called *categorical* data 
 * **Questions**: *Is value A the same or different from value B? (A = B)*?
-* **Answers**: conclusion we should be able to try is whether the values are the same or different
+* **Answers**: conclusion we should be able to make is whether the values are the same or different
 * **In `gapminder` data**: the `country` field is `N`ominal
 
 
@@ -114,10 +114,10 @@ Core **data types**, as recognized by `altair`:
 
 * *Quantitative* data measures numerical differences among values. Two types: *interval* and *ratio*
     * *Interval* data 
-        * Questions: *what is the distance to value A from value B?*
+        * Questions: *what is the difference between value A from value B?*
         * Answers: “A is 12 units away from B”
     * *Ratio* data 
-        * Questions: *How many are there of value A?*, *Value A is what proportion of value B? (A / B)
+        * Questions: *How many are there of value A?*, *Value A is what proportion of value B? (A / B)*
         * Answers: "how many babies per parent?", "A is 10% of B” 
 
 
@@ -126,11 +126,11 @@ Core **data types**, as recognized by `altair`:
 * Key difference between *interval* and *ratio*: 0 is essential for ratio, but not interval data
 * *(Note: we are following Heer et al. in use of the term "ratio," recognizing that they mean it as encompassing more than just ratios)*
 
-
 ## Quantitative (Q), continued
-* **In `gapminder` data**: `year` is a quantitative *interval* field 
-* Whereas `fertility` and `life_expect` are quantitative *ratio* fields -- zero is meaningful for calculating proportions
-* `altair` represents quantitative data, but does not make a distinction between interval and ratio types
+* Rule of thumb for visualization: show 0s for ratio data, but not for interval (typically)
+    * `altair` does not make a distinction between interval and ratio types
+    * So it will be up to you as the analyst to decide when this is appropriate!
+
 
 ## Quantitative (Q), continued
 Discussion questions
@@ -144,18 +144,24 @@ Answer: one example could be looking at healthcare spending by income. Say that 
 
 ::: 
 
+## Quantitative (Q), continued
+* **In `gapminder` data**: `year` is a quantitative *interval* field 
+    * (depending on whose history of the world you prefer, there are many choices for the year "zero")
+* Whereas `fertility` and `life_expect` are quantitative *ratio* fields -- zero is meaningful for calculating proportions
+
+
+
 
 ## Temporal (T)
 
 * *Temporal* values measure time points or intervals. 
 * Special case of quantitative values (timestamps) with rich semantics and conventions (i.e., the [Gregorian calendar](https://en.wikipedia.org/wiki/Gregorian_calendar)). 
-* Example temporal values include date strings such as `“2019-01-04”` and `“Jan 04 2019”`
+* Example temporal values include date strings such as `“2019-01-04”` and `“Jan 04 2019”` as well as durations `5 days`
 * Also standardized date-times such as the [ISO date-time format](https://en.wikipedia.org/wiki/ISO_8601): `“2019-01-04T17:50:35.643Z”`
 * There are no temporal values in our global development dataset above, as the `year` field is simply encoded as an integer. 
 
 
-<!-- MS to PG: in the interest of keeping the slides short, should we skip one of the following discussion questions?  
-PG to MS I would prefer to keep both. They convey deeply different things, one is creative and one is about taking a dataset and imposing different encodings on it. Feel free to skip though in your lecture if you want-->
+
 ## Discussion question I
 
 What are examples of variables that are: 
@@ -164,7 +170,7 @@ What are examples of variables that are:
 * `O`rdinal
 * `Q`uantitative
 
-Let's try to come up with at least three examples of each. For each example, state the comparison in a sentence.
+Let's try to come up with at least three examples of each. For each example, state a sentence about the kind of question the variable could answer or comparison you can make.
 
 ::: {.notes }
 Solution: the hard one here is nominal. examples can be geographic units, different types of health services, different types of housing 
@@ -172,19 +178,22 @@ Solution: the hard one here is nominal. examples can be geographic units, differ
 
 ## Discussion question II
 
-Suppose we have a dataset of ages (10 years old, 20 years old, 10 years old, 30 years old). What would it mean for these data to be:
+Suppose we have a dataset of ages (10 years old, 20 years old, 10 years old, 30 years old). How could we reconfigure the age data into:
 
-* `N`ominal
-* `O`rdinal
-* `Q`uantitative
+* `N`ominal type?
+* `O`rdinal type?
+* `Q`uantitative type?
+    * Interval?
+    * Ratio?
 
-What comparisons are feasible with each data type?
 
 ::: {.notes }
 
 * nominal: split into adult vs non-adult
 * ordinal: young, middle-aged, and old
-* quantitative: comparisons of magnitudes "The average age is 17.5"; "The 30-year-old is three times older than the 10-year-old."
+* quantitative: 
+    * interval: years until turn 18
+    * ratio: it's already ratio!
 
 :::
 
@@ -202,7 +211,9 @@ seattle = vega_data.seattle_weather()
 alt.Chart(seattle).mark_bar().encode(
     alt.X('month(date):O', title = "Month"),
     alt.Y('average(precipitation):Q', title = "Average rainfall (in.)")
-)
+).properties(
+    width=300,
+    height=150)
 ```
 
 * Month: `O`rdinal
@@ -242,12 +253,12 @@ alt.Chart(seattle).mark_bar().encode(
 
 A single data series can have multiple meanings depending on data type
 
-- `'N'`: a *nominal* type (unordered, categorical data),
-- `'O'`: *ordinal* type (rank-ordered data),
-- `'Q'`: *quantitative* type (numerical data with meaningful magnitudes), and
+- `'N'`: a *nominal* type (unordered, categorical data)
+- `'O'`: *ordinal* type (rank-ordered data)
+- `'Q'`: *quantitative* type (numerical data with meaningful magnitudes)
 - `'T'`: *temporal* type (date/time data)
 
-Explicitly specify the data type so that `altair` knows how to encode each variable
+Explicitly specify the data type so that `altair` knows how to interpret each variable
 
 
 
@@ -260,6 +271,7 @@ Explicitly specify the data type so that `altair` knows how to encode each varia
 - Schwabish: "Better Data Visualizations" [(link to purchase)](https://cup.columbia.edu/book/better-data-visualizations/9780231193115/)
 - Healy: "Data Visualization" [(link to full text)](https://socviz.co/)
 - Munzner. Visualization Analysis and Design. [(slides and video)](https://www.cs.ubc.ca/~tmm/vadbook/)
+- Cleveland and McGill [(link)](https://www.jstor.org/stable/2288400)
 
 ## Recall: visualization guidelines
 1. All axes and units are properly labeled and legible
@@ -275,15 +287,16 @@ Explicitly specify the data type so that `altair` knows how to encode each varia
 
 
 ## Encodings: ordered attributes
-![](pictures/munzer_fig5.6_1.png){fig-width=80%, fig-align="center"}
+![](pictures/munzer_fig5.6_1.png){fig-width=50%, fig-align="center"}
 
 Source: Munzner (2014), Figure 5.6
 
+"Effectiveness" is measured (experimentally by Cleveland and McGill) by **perceptual accuracy**: how well can people judge numeric differences when represented by each encoding
 
 
 ## Encodings: unordered attributes
 
-![](pictures/munzer_fig5.6_2.png){fig-width=80%, fig-align="center"}
+![](pictures/munzer_fig5.6_2.png){fig-width=60%, fig-align="center"}
 
 
 Source: Munzner (2014), Figure 5.6
@@ -310,20 +323,20 @@ Source: Munzner (2014), Figure 5.6
 - **Typical encodings**: position, size, and color luminance/saturation (light vs. dark) 
 
 ## Encodings by data type: quantitative
-- **Questions**: *What is the distance to value A from value B? (A - B)*? *value A is what proportion of value B? (A / B)*?
+- **Questions**: *What is the difference between value A from value B? (A - B)*? *value A is what proportion of value B? (A / B)*?
 - **Perceptual accuracy**: viewer should be able to detect relative magnitudes
 - **Typical encodings**: position, length, size, and color luminance/saturation (light vs. dark) 
     - Additionally, scale should go to 0 for ratio data
 
 ## Can we rely on `altair`'s defaults?
-- Even if you don't specify an encoding, `altair` may pick a default one
+- Even if you don't specify an encoding, `altair` will pick a default one
 - Sometimes this is innocuous. E.g., it has to pick a default color to plot graphs in
 - But sometimes the default encoding it chooses:
     - Implies order when there isn't one, or vice versa
     - Is a "wasted" opportunity to encode in a more informative way
 
 ## Example: using `altair`'s defaults
-```{.python style="font-size: 0.6em" code-line-numbers="1|"}
+```{.python style="font-size: 0.6em"}
 df_latest = data[data['year'] == data['year'].max()]
 
 alt.Chart(df_latest).mark_bar().encode(
@@ -357,7 +370,7 @@ useful if viewer has a country in mind and wants to find out the life expectancy
 ```{.python style="font-size: 0.6em" code-line-numbers="|3"}
 alt.Chart(df_latest).mark_bar().encode(
     x=alt.X('country:N',
-            =alt.EncodingSortField(field='life_expect', order='descending'sort),
+            =alt.EncodingSortField(field='life_expect', order='descending'),
             title='Country'),
     y=alt.Y('life_expect:Q', title='Life Expectancy')
 )
@@ -567,6 +580,33 @@ alt.Chart(data2000).mark_point().encode(
 
 Note: `alt.Scale(range=[0,1000])` indicates the *visual* size of the marks (in pixels), and is not in reference to values in the underlying data
 
+<!-- PG to SSS I suggest deleting this slide on alt.Scale(range=[0,1000]). Or if we do keep it then more explanation is needed-->
+
+## `shape` 
+```{.python  code-line-numbers="4|"}
+alt.Chart(data2000).mark_point().encode(
+    alt.X('fertility:Q', title = "Fertility (children per woman)"),
+    alt.Y('life_expect:Q', scale=alt.Scale(zero=False), title = "Life expectancy"),
+    alt.Shape('cluster_name:N', title = "Regional Cluster")
+)
+```
+
+```{python}
+alt.Chart(data2000).mark_point().encode(
+    alt.X('fertility:Q', title = "Fertility (children per woman)"),
+    alt.Y('life_expect:Q', scale=alt.Scale(zero=False), title = "Life expectancy"),
+    alt.Shape('cluster_name:N', title = "Regional Cluster")
+).properties(
+    width=200,
+    height=200
+)
+```
+
+Discussion: thoughts on how well `alt.Shape` communicates `cluster_name`?
+
+::: {.notes }
+Answer: not very well. You have to keep going back and forth from the legend to the graph. This is why it is very low in the ranking for unordered data. Another example of "bad" use of encoding because it requires a lot of unnecessary effort for the reader.
+:::
 
 ## add `color`
 ```{.python  code-line-numbers="1,5|"}
@@ -588,12 +628,6 @@ alt.Chart(data2000).mark_point(filled=True).encode(
 ```
 
 
-::: {.notes }
- altair is treating it as nominal. We (as the reader) can see that they can be ranked -- though it's unclear whether the underlying data is actually ordinal.
-:::
-<!-- PG to MS I don't understand this answer in the speaker notes... it is groups of countries and it should be nominal.
-
-MS to GGG: got rid of the discussion question now that we've fixed cluster-->
 
 ## `opacity`
 ```{.python  code-line-numbers="6|"}
@@ -605,6 +639,8 @@ alt.Chart(data2000).mark_point(filled=True).encode(
     alt.OpacityValue(0.2)
 )
 ```
+
+<!-- PG to SSS I skipped this slide. Without rendering a plot to show opacity there is no clear lesson. Opacity can easily be explained instead on an upcoming slide-->
 
 Question: are we encoding anything here? 
 
@@ -624,7 +660,7 @@ alt.Chart(data2000).mark_point(filled=True).encode(
     alt.Size('pop:Q', scale=alt.Scale(range=[0,1000]), title = "Population")
     alt.Color('cluster_name:N', title = "Regional Cluster"),
     alt.OpacityValue(0.5),
-    alt.Column('cluster_name:N')
+    alt.Column('cluster_name:N', title = "Regional Cluster")
 )
 ```
 
@@ -635,7 +671,7 @@ alt.Chart(data2000).mark_point(filled=True).encode(
     alt.Size('pop:Q', scale=alt.Scale(range=[0,1000]), title = "Population"),
    alt.Color('cluster_name:N', title = "Regional Cluster"),
     alt.OpacityValue(0.5),
-    alt.Column('cluster_name:N')
+    alt.Column('cluster_name:N', title = "Regional Cluster")
 ).properties(
     width=130,
     height=130
@@ -656,7 +692,7 @@ alt.Chart(data2000).mark_point(filled=True).encode(
              legend=alt.Legend(orient='bottom', titleOrient='left'),
              title = "Population"),
     alt.OpacityValue(0.5),
-    alt.Column('cluster_name:N'))
+    alt.Column('cluster_name:N', title= "Regional Cluster"))
 ```
 
 ```{python}
@@ -667,7 +703,7 @@ alt.Chart(data2000).mark_point(filled=True).encode(
              legend=alt.Legend(orient='bottom', titleOrient='left'),
              title = "Population"),
     alt.OpacityValue(0.5),
-    alt.Column('cluster_name:N'),
+    alt.Column('cluster_name:N', title= "Regional Cluster"),
 ).properties(width=135, height=135)
 ```
 
@@ -689,59 +725,14 @@ We can clean it up by eliminating superfluous encodings and moving legend
 
 ## Graphical marks: roadmap
 
-Prior section used only `mark_point()`. Now will cover
+So far we have seen `mark_point()` and `mark_bar()`. Now will cover
 
-- `mark_point()`
-    - `mark_circle()`	
-    - `mark_tick()` 
+- `mark_circle()`	
+- `mark_tick()` 
 - `mark_bar()`
 - `mark_line()`  
 - `mark_area()` 
 
-## `mark_point()`: add information using `alt.Shape()` 
-```{.python  code-line-numbers="4|"}
-alt.Chart(data2000).mark_point().encode(
-    alt.X('fertility:Q', title = "Fertility (children per woman)"),
-    alt.Y('life_expect:Q', scale=alt.Scale(zero=False), title = "Life expectancy"),
-    alt.Shape('cluster_name:N', title = "Regional Cluster")
-)
-```
-
-```{python}
-alt.Chart(data2000).mark_point().encode(
-    alt.X('fertility:Q', title = "Fertility (children per woman)"),
-    alt.Y('life_expect:Q', scale=alt.Scale(zero=False), title = "Life expectancy"),
-    alt.Shape('cluster_name:N', title = "Regional Cluster")
-).properties(
-    width=130,
-    height=130
-)
-```
-
-Discussion: thoughts on how well `alt.Shape` communicates `cluster_name`?
-
-::: {.notes }
-Answer: not very well. You have to keep going back and forth from the legend to the graph. This is why it is very low in the ranking for unordered data. Another example of "bad" use of encoding because it requires a lot of unnecessary effort for the reader.
-:::
-
-<!-- 
-## `mark_point()`: format points using arguments
-```{.python  code-line-numbers="1|"}
-alt.Chart(data2000).mark_point(filled=True, size=100).encode(
-    alt.X('fertility:Q', title = "Fertility (children per woman)"),
-    alt.Y('life_expect:Q', scale=alt.Scale(zero=False), title = "Life expectancy"),
-    alt.Shape('cluster:N', title = "Cluster")
-)
-```
-
-```{python  code-line-numbers="1|"}
-alt.Chart(data2000).mark_point(filled=True, size=100).encode(
-    alt.X('fertility:Q', title = "Fertility (children per woman)"),
-    alt.Y('life_expect:Q', scale=alt.Scale(zero=False), title = "Life expectancy"),
-    alt.Shape('cluster:N', title = "Cluster")
-)
-``` 
--->
 
 
 ## `mark_circle()` wrapper for `mark_point(filled=True)`
@@ -758,23 +749,6 @@ alt.Chart(data2000).mark_circle(size=100).encode(
 )
 ```
 
-<!-- 
-## `mark_square()`
-```{.python  code-line-numbers="1|"}
-alt.Chart(data2000).mark_square(size=100).encode(
-    alt.X('fertility:Q', title = "Fertility (children per woman)"),
-    alt.Y('life_expect:Q', scale=alt.Scale(zero=False), title = "Life expectancy")
-)
-```
-
-```{python}
-alt.Chart(data2000).mark_square(size=100).encode(
-    alt.X('fertility:Q', title = "Fertility (children per woman)"),
-    alt.Y('life_expect:Q', scale=alt.Scale(zero=False), title = "Life expectancy")
-)
-```
- -->
-
 ## `mark_tick()`
 ```{.python}
 alt.Chart(data2000).mark_tick().encode(
@@ -790,7 +764,7 @@ alt.Chart(data2000).mark_tick().encode(
 )
 ```
 
-Useful for comparing values along a single dimension with minimal overlap. 
+Useful for comparing values along a single dimension with minimal overlap. A *dot plot* drawn with tick marks is sometimes referred to as a *strip plot*.
 
 ## `X` and `X2`
 
@@ -810,7 +784,7 @@ alt.Chart(data2000).mark_bar().encode(
 )
 ```
 
-A *dot plot* drawn with tick marks is sometimes referred to as a *strip plot*.
+
 
 
 ## `mark_bar()` {style="font-size: 0.8em"}
@@ -829,7 +803,7 @@ alt.Chart(data2000).mark_bar().encode(
 )
 ```
 
-["Bad"]{style="color:red;"} use of encoding: here is an instance of a "wasted" opportunity to encode something useful on the x-axis
+["Bad"]{style="color:red;"} use of encoding: here is another instance of a "wasted" opportunity to encode something useful on the x-axis
 
 
 ## `alt.Color()` for a stacked bar plot {style="font-size: 0.8em"}
@@ -856,23 +830,6 @@ alt.Chart(data2000).mark_bar().encode(
 ["Bad"]{style="color:red;"} use of color -- way too many categories! Requires reader to move back and forth between graph and legend to parse.
 
 
-## `X2()` to show intervals
-
-```{.python}
-alt.Chart(data2000).mark_bar().encode(
-    alt.X('min(life_expect):Q', title = "Life expectancy"),
-    alt.X2('max(life_expect):Q'),
-    alt.Y('cluster_name:N', title = "Regional Cluster")
-)
-```
-
-```{python}
-alt.Chart(data2000).mark_bar().encode(
-    alt.X('min(life_expect):Q', title = "Life expectancy"),
-    alt.X2('max(life_expect):Q'),
-    alt.Y('cluster_name:N', title = "Regional Cluster")
-)
-```
 
 ## `mark_line()` 
 ```{.python}
@@ -996,6 +953,8 @@ alt.Chart(dataNA).mark_area(opacity=0.5).encode(
 )
 ```
 
+<!--PG to SSS I got asked "is there ever a time you would use mark_area without stack?" and I was unable to come up with a good example-->
+
 Discussion: is this a good use of color?
 
 ::: {.notes }
@@ -1022,7 +981,7 @@ alt.Chart(dataNA).mark_area().encode(
 )
 ```
 
-**Conclusion**: over time, both the overall fertility values and the variability have declined.
+**Headline**: over time, both the overall fertility values and the variability have declined.
 
 
 ## Graphical marks: summary
@@ -1048,9 +1007,9 @@ For a complete list, and links to examples, see the [Altair marks documentation]
 
 ## Roadmap
 * Overarching principle: **minimize audience's mental effort**
-* 2 rules of thumb
+* 3 suggestions
 
-## Why Labels matter
+## Why labels matter
 * Marks and encodings tell us *how* data vary
 * The text tells us *what* varies
 * **Well-chosen text reduces the amount of thinking the reader has to do.**

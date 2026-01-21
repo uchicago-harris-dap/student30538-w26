@@ -10,6 +10,8 @@ format:
     self-contained: true
 ---
 
+# Introduction
+
 ## Introduction: roadmap
 
 * Putting this lecture in context
@@ -38,7 +40,6 @@ import pandas as pd
 import altair as alt
 
 movies_url = 'https://cdn.jsdelivr.net/npm/vega-datasets@1/data/movies.json'
-movies = pd.read_json(movies_url)
 ```
 
 ```{python}
@@ -50,11 +51,19 @@ movies = pd.read_json(movies_url)
 
 ![](pictures/movies_json.png){fig-width=80%, fig-align="center"}
 
+<div style="font-size: 80%">
 ## *An aside on JSON*
-- Movies database is stored as a `.json` at [this URL](https://cdn.jsdelivr.net/npm/vega-datasets@1/data/movies.json)
-- Recall `altair` that writes Vega-lite, which is also recorded in JSON!
-    - JSON is just a "syntax" to store text, numbers, etc. in a human-readable way
-    - In spatial lectures, we will also encounter the "geojson" format, which can store geographic features 
+- All the sample `vega-datasets` are stored as `.json`, including movies
+- Other places you have or will see JSON
+    - Recall from viz lecture 1 that `altair` writes Vega-lite, which is also recorded in JSON
+    - In spatial lectures, we will also encounter the `geojson` format, which can store geographic features 
+- JSON shines at storing hierarchical data in a way that is easily readable to both humans and machines. Family tree [example](https://stackoverflow.com/questions/5129890/represent-hierarchy-in-a-json-object), wikipedia [example](https://en.wikipedia.org/wiki/JSON#Syntax). 
+- The movies dataset, however, is just a boring table like any other. We will convert it to `pandas` for Altair to use
+
+```{.python}
+movies = pd.read_json(movies_url)
+```
+</div>
 
 ## `head()`
 ```{.python}
@@ -76,7 +85,10 @@ movies.shape
 movies.shape
 ```
 
-With 3201 movies, we are going to need to do some transformation if we want to uncover any patterns in the data!
+* With 3201 movies, we are under the 5000 obs limit from `altair`. 
+* However, as you will see soon, it's hard to learn much from a plot with 3201 observations.
+* This is why this is a good case study for the value of transformations if we want to uncover any patterns in the data
+
 
 ## Variables of interest
 * **Rotten Tomatoes** ratings are determined by taking "thumbs up" and "thumbs down" judgments from film critics and calculating the percentage of positive reviews.
@@ -200,7 +212,7 @@ Documentary movies are uniformly well-acclaimed. In contrast, horror movies (for
 * Full list [here](https://altair-viz.github.io/user_guide/encodings/index.html#aggregation-functions)
 
 
-## Case study: when are the highest grossing films?
+## Case study: when are the highest grossing films released?
 ```{.python}
 movies_gross = movies[['US_Gross', 'Release_Date']]
 movies_gross.head()
@@ -478,7 +490,7 @@ alt.Chart(movies_url).mark_bar().transform_aggregate(
     Gross='sum(Worldwide_Gross)',
     groupby=['Director']
 ).encode(
-    alt.X('Gross:Q', title = "Worldwide Gross ($)"),
+    alt.X('Gross:Q', title = "Directors' Worldwide Gross ($)"),
     alt.Y('Director:N', sort=alt.EncodingSortField(
         op='max', field='Gross', order='descending'
     ),
