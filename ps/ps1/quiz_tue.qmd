@@ -1,0 +1,81 @@
+
+---
+title: "30538 git quiz"
+author: "Peter Ganong and Maggie Shi"
+date: "2026-01-13"
+format: 
+  pdf:
+    include-in-header: 
+       text: |
+         \usepackage{fvextra}
+         \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
+---
+
+### Part 1 -- git commands
+
+You start with a repo that looks like this
+```{shell}
+% ls 
+foo.txt
+```
+```{shell}
+% git log --oneline
+09ee4bb (HEAD -> master) my second commit
+a6e1b8a my first commit
+```
+
+Pretend in a branch named something other than master you modified `foo.txt`, went back to master, did some work in a third branch also modifying `foo.txt`, and then tried to merge the third branch into the second branch. Provide the git commands you ran.
+
+### Part 2 -- conflict resolution
+
+Unfortunately you got the dreaded merge conflict. Doh!
+
+1. Write what a hypothetical `foo.txt` file would look like after you attempt this merge.
+2. Then edit down `foo.txt` so the conflict is resolved.
+3. Provide the git commands necessary to complete the merge.
+4. Write out the sequence of commits from part 1 and part 2 (including your merge commit). Unfortunately it is not possible to draw in canvas, but you can show a tree of commits in plaintext. For example, the history of commits C0 followed by C1 can be written as `C0 <- C1`
+
+# Answers
+
+### Part 1
+```{shell}
+% git branch iss1
+% git switch iss1
+% echo "2" >> foo.txt
+% git add foo.txt
+% git commit -m "C3"
+% git switch main
+% git branch iss2
+% git switch iss2
+% echo "3" >> foo.txt
+% git add foo.txt
+% git commit -m "C4"
+% git switch iss1
+% git merge iss2 --no-ff
+```
+
+
+### Part 2
+
+
+1. Write what a hypothetical `foo.txt` file would look like after you attempt this merge.
+2. Then edit down `foo.txt` so the conflict is resolved.
+3. Provide the git commands necessary to complete the merge.
+4. Write out the sequence of commits from part 1 and part 2 (including your merge commit). Unfortunately it is not possible to draw in canvas, but you can show a tree of commits in plaintext. For example, the history of commits C0 followed by C1 can be written as `C0 <- C1`
+
+1. 
+    ```{shell}
+    <<<<<<< HEAD
+    Hello from feature
+    =======
+    Hello from experiment
+    >>>>>>> iss2
+    ```
+
+2. `Hello from feature`
+3. `% git add foo.txt \\ git commit` (I think `git merge` might work too for the second command, the grader of this question should double check)
+4.
+     ```{shell}
+    C1 <- C2 <- C3 <- C5
+             \  C4 /
+    ```
