@@ -20,4 +20,8 @@ dependencies:
   - statsmodels
   - vega_datasets
   - streamlit
+  - pip
+  - lxml
+  - pip:
+      - vl-convert-python
 prefix: /Users/maggieshi/miniconda3/envs/dap
