@@ -1,0 +1,85 @@
+---
+title: "Kickoff - lecture 8"
+author: "Peter Ganong and Maggie Shi"
+date-format: February 3, 2026
+format: 
+    revealjs:
+        slide-number: true
+        show-slide-number: all
+        self-contained: true
+---
+
+## Altair transform questions (delayed, sorry!) {style="font-size: 0.8em"}
+```{python}
+#| eval: false
+#| echo: true
+alt.Chart(movies_url).mark_bar().transform_filter(
+    'datum.Director != null'
+).transform_aggregate(
+    Gross='sum(Worldwide_Gross)',
+    groupby=['Director']
+).transform_window(
+    Rank='rank()',
+    sort=[alt.SortField('Gross', order='descending')]
+).transform_filter(
+    'datum.Rank <= 10'
+).encode(
+    alt.X('Gross:Q', title = "Worldwide Gross ($)"),
+    alt.Y('Director:N', sort=alt.EncodingSortField(
+        op='max', field='Gross', order='descending'
+    ), title = "Director")
+)
+```
+
+Questions
+
+1. What is `alt.Y('Director:N', sort=alt.EncodingSortField(op='max', field='Gross', order='descending'))`?
+2. Could I do something briefer?
+3. When would I use this syntax?
+
+## Altair transform answers {style="font-size: 0.8em"}
+
+Answers 
+
+1. What is `alt.Y('Director:N', sort=alt.EncodingSortField(op='max', field='Gross', order='descending'))`? *This is sorting the bars. In this chart, each director has one aggregated Gross value, so sorting by `max(Gross)` effectively orders directors from highest total gross to lowest.*
+2. Could I do something briefer? *Yes. In this chart, you already aggregated to one row per director. `alt.Y('Director:N', sort='-x', title="Director")` works*
+3.  When would I use the longer syntax? *When you want the bars to be ordered by something different than the variable value. Example: sort movie directors by age*
+
+## Final exam timing
+* Final: **Thursday, Feb 26 6:30-8PM**
+* Makeup: Friday, Feb 27 10:30-11:50AM
+    * We are aware of 12 students with a class conflict for Thursday
+    * If you are one of these 12 students, you will get an email this week from the admin TA
+    * If you are expecting an email and didn’t get one by the end of the week then post in Ed
+
+
+## Week 4 Lab assessment debrief from TAs
+- Q1: adding code documentation
+    - Common mistakes: vague explanations on description of data cleaning steps or graph description
+    - Be as specific as possible!
+- Q2: code summary and aesthetic changes
+    - To get full credit, we were looking for code *and* description in plain English of change
+
+## Week 4 Lab assessment debrief from TAs
+- Q3: content-related improvements.
+    - _"Recall that your goal is to help the Department of Finance decide how to schedule their enforcement officer shifts throughout the week."_
+- Strong answers:
+    - Flagged issues with using year-to-year variation
+    - Pointed out incompleteness of 2018
+    - Suggested slicing by geography or violation type
+    - Noted that plotting total ticket counts can be misleading, suggested normalizing
+
+
+## Lab assessment process update
+- To give better/more consistent feedback, we are moving to administering quiz in **Gradescope**
+- Changes from before:
+    - No lockdown browser
+    - Laptop closed and stay in lab after submitting until everyone has submitted
+    - Bring a book!
+- Same as before:
+    - 30 minute, in-person on laptops in lab
+    - Optional Codespace (Except today!)
+- Access Gradescope classroom through Canvas
+
+## More final project office hours during lab
+Sign up [here](https://docs.google.com/spreadsheets/d/1LdJo1yJfd1Kq01neww5iWvlgrG_r8CDpaBISagN0C-U/edit?gid=1993259422#gid=1993259422)

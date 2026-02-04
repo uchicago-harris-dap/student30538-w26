@@ -1,0 +1,290 @@
+---
+title: "Mini-Lesson 4: Pseudocode"
+author: "Ralph Valery Valiere"
+format:
+  revealjs:
+    slide-number: true
+    chalkboard: false 
+    preview-links: auto
+execute:
+  eval: true
+  echo: true
+---
+
+# What you will learn today:
+
+- What a pseudocode is
+- What a pseucode is useful for
+- Best Practices for Pseudocodes
+- Test how to write a pseudocode (do-pair-share exercise after minilesson)
+
+If you want to explore more, you can read this course [here](https://www.cs.ubc.ca/~hkhosrav/py/slides/02.Pseudocode.pdf).
+
+::: {.notes}
+- I will remind them that the materials is very useful for the upcoming problem set (PS4), especially for one of the questions.
+- I will also ask them at the beginning if anyone can let me know what a pseudocode is.
+- The do-pair-share is optional. So if they want to leave after, they can.
+:::
+
+# What is a pseudocode?
+
+---
+
+### What a pseudocode is (1)
+
+A pseudocode is :
+
+- A **step-by-step** ***text*** outline of an algorithm/code that you can later translate into running codes.
+
+- It combines **human language** (most of the time *English*) and **programming language**. 
+
+- A **reader** can quickly understand the main structure and ideas of your code.
+
+In summary, it's a simplified combination of English and code outlines for an algorithm
+
+---
+
+### What a pseudocode is (2)
+
+- **Step-by-step**: It reflects the syntax of the actual algorithm/code
+- **Text**: It's not a *Flowchart* (another way to outline an algorithm/code)
+- **Human language**: Our concern is more about readability than technical specificities
+- **Programming language**: It also includes some programming syntax and statements
+- **Readers**: Even someone unfamiliar with your programminig language can understand it.
+
+---
+
+### Writing a pseudocoe in one picture
+
+![](pictures/quantum_for_babies_pseudo.jpg){fig-align="center"}
+
+*Source: A good father on [Reddit](https://www.instagram.com/p/CH5057LjqMW/)*
+---
+
+
+### What a pseudocode is NOT
+
+- It's *NOT* a full English description of your code
+- It's *NOT* runnable codes
+- It's *NOT* tied to a specific programming language
+- It's *NOT* a graphical representation (diagram or chart)
+- It *DOES NOT* replace your algorithm
+
+There is *NO* universal rules/standard on how you should write a pseudocode. It is **subjective**.
+
+While it should be clear, there is *NO* guarantee it will not be ambiguous for some people reading it.
+
+::: {.notes}
+- Here, I want aslo to emphasize on the fact that even if there is not universal rules for pseudo code, there are best practices that we will see in this minilesson too.
+- I also want to point out that even if a pseudocode might not have ambiguity, they should make sure it's clear as much as possible.
+:::
+
+---
+
+### Actual Code VS Pseudocode (1)
+
+Using this dataset, I wrote a function to find the average lab attendance per week, only for 1st and last weeks.
+
+```{python}
+#| eval: false
+import pandas as pd
+import numpy as np
+
+# This is fake data I created
+lab_attendance_data = {
+  'lab_week': [1, 2, 3, 4, 5, 6, 7, 8],
+    'attendance': [15, 18, 16, 19, 18, 16, 19, 19]
+}
+lab_attendance = pd.DataFrame(lab_attendance_data)
+
+# This is function we want to create for this example
+def avg_firstlast(data):
+  fw_attendance = data['attendance'].iloc[0]
+  lw_attendance = data['attendance'].iloc[-1]
+  avg_attendance = np.mean([fw_attendance, lw_attendance])
+  return avg_attendance
+```
+---
+
+### Actual Code VS Pseudocode (2)
+
+Pseudocode Example 1
+
+Here is one way to write the pseudo code for the function we created earlier:
+
+....
+
+```
+FUNCTION avg_firstlast(data):
+BEGIN
+    fw_attendance <- first value in 'attendance' column in data
+    lw_attendance <- last value in 'attendance' column in data
+    avg_attendance <- average of fw_attendance & lw_attendance
+    RETURN avg_attendance
+END
+ENDFUNCTION
+```
+
+....
+
+This pseudocode is using more description.
+---
+
+### Actual Code VS Pseudocode (3)
+
+Pseudocode Example 2
+
+Here is **ANOTHER** way to write the pseudo code for the function we created earlier:
+
+....
+
+```
+FUNCTION avg_firstlast(data)
+    first_val ← data.attendance[0]
+    last_val ← data.attendance[-1]
+    avg_attendance ← (first_val + last_val) / 2
+    return avg_attendance
+END FUNCTION
+```
+
+....
+
+This pseudocode uses less English description, using more conventional expressions.
+
+::: {.notes}
+- I will go quickly over those 2 examples and explains the main difference between the two of them.
+:::
+
+# Why use a pseucode?
+
+---
+
+### Reasons why pseudocode is useful
+
+**If pseudocode is subjective, why even use it in the first place? Here is why:**
+
+- Can help you clarify and structure your thoughts before writing runnable codes
+- Describes how your algorithm/code works (explaining the process behing your code)
+- Allows someone with no coding background to understand what your code is doing
+- Makes reviewing codes easier
+- Reduces the number of comments needed in your script 
+
+::: {.notes}
+- I will also ask if someone can thinking of another reasons they think a pseudocode may be useful
+:::
+
+# What are the pseudocode best practices?
+
+---
+
+### Common conventions for pseudocode (1)
+
+While there is no universal rules on how to write a pseudocode, there are some best practices:
+
+- Use **one line per statement**
+  - *A bad example* 
+```
+FUNCTION avg_firstlast(data)
+    first_val ← data.attendance[0] & last_val ← data.attendance[-1]
+```
+
+- Use **blocks** to give structure to your pseudocode
+  - *Do this*
+```
+Block_1
+  Block_1_1
+  Block_1_2
+Block_2
+  Block_2_1
+```
+---
+
+### Common conventions for pseudocode (2)
+
+- **Capitalize the first keyword** to indicate the primary functions of each block (like FUNCTION)
+- Some keywords like **IF, WHILE, FOR, FUNCTION etc.** are reserved by some conventions
+- **Write exactly what you mean**, NOT exactly what you wrote as a code. You are not trying to reproduce your codes
+- **Describe everything** that is happening in your code (DO NOT leave out anything)
+- Use **standard code structure** as much as possible (For example, use identation for this class)
+
+::: {.notes}
+- Remind them again that those are more conventions than universally accepted rules
+:::
+
+# Do-pair-share (OPTIONAL)
+
+---
+
+### Exercise to practice writing a pseudocode
+
+**Try to understand the code below and write its pseudocode.**
+
+```{python}
+import numpy as np
+
+# Tip 1: First, try to undertand what each line are doing
+random_list = [12, 25, 32, 16, 33, 28, 18, 19, 21, 22]
+updated_list = []
+
+# Tip 2: Try to write pseudocode for each block
+for num in random_list:
+    num_half = num / 2
+    updated_list.append(num_half)
+
+# Tip 3: I decided to not add comments on purpose
+final_list = updated_list[1:-1]
+
+# Tip 4: This is optional. You can do it at home!
+avg_list = np.mean(final_list)
+```
+
+::: {.notes}
+One solution will be available on those slides, but I won't share it if they are doing the exercise.
+:::
+
+---
+
+### Do-pair-share Solutions (1)
+
+**This is ONE pseudocode for the do-pair-share code**
+
+...
+
+```
+SET random_list TO [12, 25, 32, 16, 33, 28, 18, 19, 21, 22]
+SET updated_list TO empty list
+
+FOR EACH num in random_list DO:
+  SET num_half TO num / 2
+  APPEND num_half TO updated_list
+END FOR
+
+SET final_list TO all elements of updated_list
+except the first and last elements
+
+SET avg_list TO the average value of final_list
+```
+...
+
+---
+
+### Do-pair-share Solutions (2)
+
+**This is ANOTHER pseudocode for the do-pair-share code**
+
+...
+
+```
+random_list <- [12, 25, 32, 16, 33, 28, 18, 19, 21, 22]
+updated_list <- empty list
+
+FOR EACH num in random_list:
+  num_half <- num / 2
+  APPEND num_half TO updated_list
+END FOR
+
+final_list <- updated_list[1:-1]
+
+avg_list <- average value of final_list
+```
+...

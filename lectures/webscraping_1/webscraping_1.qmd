@@ -1,0 +1,790 @@
+---
+title: "Webscraping I"
+author: "Peter Ganong and Maggie Shi"
+date: February 2, 2026
+date-format: long
+execute:
+  python: /Library/Frameworks/Python.framework/Versions/3.12/bin/python3
+format: 
+    beamer:
+        aspectratio: 169
+        theme: default
+        toc: true
+        header-includes: 
+            \setbeamertemplate{footline}[frame number]
+            \usepackage{fvextra}
+            \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
+            \DefineVerbatimEnvironment{OutputCode}{Verbatim}{breaklines,commandchars=\\\{\}}
+---
+<!-- 
+Comment out the header above and use the following header to create a version for printing
+---
+title: "Webscraping I"
+author: "Peter Ganong and Maggie Shi"
+date: February 2, 2026
+date-format: long
+
+# (Optional but recommended) give the handout a distinct filename
+output-file: "webscraping_1-print.pdf"
+
+execute:
+  python: /Library/Frameworks/Python.framework/Versions/3.12/bin/python3
+
+format:
+  beamer:
+    aspectratio: 169
+    theme: default
+    toc: true
+
+    # KEY LINE: removes overlay dynamics (pause / <1-> etc.) in the PDF
+    classoption: handout
+
+    header-includes:
+      - \setbeamertemplate{footline}[frame number]
+      - \usepackage{fvextra}
+      - \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
+      - \DefineVerbatimEnvironment{OutputCode}{Verbatim}{breaklines,commandchars=\\\{\}}
+---
+ -->
+
+## Setup
+- The scraping lectures make use the `lxml` and `requests` packages, which we forgot to include in the original `environment.yml`! 
+- Please  `cd` to the student repo, pull the updated `environment.yml`, then run:
+```{}
+conda env update --file environment.yml --prune
+```
+
+- Then restart Python/Jupyter kernel
+
+## Skills acquired at the end of this lecture 
+- Be able to read basic components HTML to understand how a computer "sees" a web page
+- Understand how to use `BeautifulSoup` to search through HTML
+- Understand where to use AI to speed up process
+
+## A note on AI
+- Pre-AI: developing a scraper used to be a *much more* time-intensive endeavor, where much of your time would be spent tweaking the exact specification to scrape what you want and not scrape what you don't want
+- Now: AI can replace a lot of this human effort on pattern recognition and iterating
+- Why are we still teaching this? To understand how to direct AI to code your scraper, you still need to understand underlying syntax and the scraping workflow
+
+# Introduction to Web Scraping and HTML
+
+## Roadmap:
+- Intro to webscraping and HTML
+- HTML structure
+- Two examples: simple one and a real website
+- Do-pair-share
+
+
+## Webscraping
+- **Webscraping** uses code to systematically extract content and data from websites 
+- Though websites vary a lot in how they're structured and where data is located, most are constructed using a common language: **HTML**
+- Each website can be converted into its underlying HTML code and then parsed with Python
+
+## Steps to building a webscraper
+
+The steps of building a webscraper are:
+
+1. *Manual*: inspect website's HTML to see how the info we want to extract is structured and how a computer/scraper sees the webpage
+2. *Code*: download and save HTML associated with a website
+3. *Code*: extract information you want to scrape from HTML
+
+. . .
+
+\vspace{4ex}
+We'll start with step 1: **learning how to inspect and read HTML**. Note you won't need to *write* HTML, just understand its structure enough so you can extract from it.
+
+
+
+
+## HTML structure
+- **HTML**: Hypertext Markup Language
+- Tells your web browser how to display the content of a web page
+
+. . .
+
+- Structure of an HTML element: 
+
+\AddToHookNext{env/Highlighting/begin}{\footnotesize}
+```{html}
+<name_of_tag 
+    attribute1 = 'value' 
+    attribute2 = 'othervalue'> content </name_of_tag>
+```
+
+\vspace{2ex}
+1. **Tags**: keyword that defines what element is, such as headline text, paragraph text, link, etc.
+2. **Attributes**: additional information about element (optional)
+3. **Content**: text associated with that element
+
+. . . 
+
+For scraping: we (typically) want to extract the content, and we'll use the tags and attributes as keywords to direct scraper to the content
+
+
+
+## HTML structure, cont'd
+- HTML is structured hierarchically, so tags can be nested within tags
+
+```{html}
+<tag1 attribute1 = 'value'> 
+    <tag2 attribute1 = 'othervalue'> 
+        content
+    </tag2>
+</tag1>
+```
+
+
+## `simple.txt` example
+\vspace{-3ex}
+![](pictures/simple_txt_1.pdf){ width=140% fig-align="center"}
+
+## `simple.txt` example
+\vspace{-3ex}
+![](pictures/simple_txt_2.pdf){ width=140% fig-align="center"}
+
+
+## `simple.txt` example
+\vspace{-3ex}
+![](pictures/simple_txt_3.pdf){ width=140% fig-align="center"}
+
+
+## `simple.txt` example
+\vspace{-3ex}
+![](pictures/simple_txt_4.pdf){ width=140% fig-align="center"}
+
+## `simple.txt` example
+\vspace{-3ex}
+![](pictures/simple_txt_5.pdf){ width=140% fig-align="center"}
+
+## `simple.txt` example
+\vspace{-3ex}
+To see the HTML in action, rename the file extension from `.txt` to `.html`
+
+![](pictures/simple_txt_to_html.png){ width=40% fig-align="center" }
+
+Click "Use .html" when prompted
+
+## `simple.txt` example
+
+This should open as a web page in your default web browser
+![](pictures/simple_txt_6.png){ width=50% fig-align="center" }
+
+## `simple.txt` example
+
+![](pictures/simple_txt_7.pdf){ width=100% fig-align="center"}
+
+## `simple.txt` example
+
+![](pictures/simple_txt_8.pdf){ width=100% fig-align="center"}
+
+## `simple.txt` example
+
+![](pictures/simple_txt_9.pdf){ width=100% fig-align="center"}
+
+## `simple.txt` example
+
+![](pictures/simple_txt_10.pdf){ width=100% fig-align="center"}
+
+## `simple.txt` example
+
+![](pictures/simple_txt_11.pdf){ width=100% fig-align="center"}
+
+## `simple.txt` example
+
+![](pictures/simple_txt_12.pdf){ width=100% fig-align="center"}
+
+## `simple.txt` example
+
+![](pictures/simple_txt_13.pdf){ width=100% fig-align="center"}
+
+## `simple.txt` example
+
+![](pictures/simple_txt_14.pdf){ width=100% fig-align="center"}
+
+## `simple.txt` example
+
+![](pictures/simple_txt_15.pdf){ width=100% fig-align="center"}
+
+## `simple.txt` example
+
+![](pictures/simple_txt_16.pdf){ width=100% fig-align="center"}
+
+## `simple.txt` example
+
+![](pictures/simple_txt_17.pdf){ width=100% fig-align="center"}
+
+## `simple.txt` example
+If we open the `simple.html` file and right-click + "Inspect"...
+![](pictures/simple_html_inspect.png){ width=60% fig-align="center"}
+
+## `simple.txt` example
+If we open the `simple.html` file and right-click + "Inspect"...
+![](pictures/simple_html_inspect_2.png){ width=100% fig-align="center"}
+
+
+## `simple.txt` example
+Once we expand this, we get back `simple.txt`!
+![](pictures/simple_html_inspect_3.png){ width=100% fig-align="center"}
+
+## We can "inspect" (nearly) any page on the web for its HTML 
+
+![](pictures/harris_inspect_1.png){ width=60% fig-align="center"}
+
+[Link to demo: Harris Specialization in Data Analytics](https://harris.uchicago.edu/academics/design-your-path/specializations/specialization-data-analytics) (also available as `harris_specialization.html`)
+
+## We can "inspect" (nearly) any page on the web for its HTML 
+
+![](pictures/harris_inspect_2.png){ width=75% fig-align="center"}
+
+[Link to demo: Harris Specialization in Data Analytics](https://harris.uchicago.edu/academics/design-your-path/specializations/specialization-data-analytics) (also available as `harris_specialization.html`)
+
+
+
+
+## Common HTML tags and attributes 
+- For our purposes, we don't need to know *exactly* what each tag and attribute does or means -- we will just be using them as targets for scraping
+- That said, there are some commonly-used HTML tags and attributes you may start to recognize as you inspect webpages
+
+## Some Common HTML Tags
+
+HTML tags always have the structure: 
+```{html}
+<open> ... </close>
+```
+
+
+Common tags include: 
+
+- Headings: `<h1> ... </h1>`, `<h6> ... </h6>`
+- Bold, italic: `<b> ... </b>`, `<i> ... </i>`
+- Paragraph: `<p> ... </p>`
+- Hyperlinks `<a> ... </a>`
+- Images: `<img> ... </img>`
+
+
+## Some Common HTML Attributes
+HTML attributes always have the following structure: 
+
+```{html}
+<TAG attribute = 'attributevalue'> ... </TAG>
+```
+
+Some common attributes are: 
+
+- style: `<TAG style = 'color:red;'> ... </TAG>`
+- id: `<TAG id = 'idvalue'> ... </TAG>`
+- class: `<TAG class = 'classname'> ... </TAG>`
+
+
+
+
+## Some Common HTML Tags/Attribute Combinations
+
+- Some tags and attributes are commonly used together
+- Image + source: 
+```{html}
+<img src = 'image.png'>... </img>
+```
+`img` is the tag while `src` is the attribute (source for the image file)
+
+
+. . .
+
+- Links: 
+
+```{html}
+<a href = 'www.google.com'> ... </a>
+```
+
+- `a` is the tag while `href` is the attribute (URL)
+
+
+## Some Common HTML Tags/Attribute Combinations
+
+One tag can also be associated with multiple attributes
+
+```{html}
+<img src = 'image.png' width = 500 height = 600> ... </img>
+```
+
+This combines 1 tag (`img`) with 3 attributes (`src`, `width`, and `height`)
+
+
+
+## **Do-pair-share**
+
+1. Inspect the HTML code on the [Harris Specialization in Data Analytics (link)](https://harris.uchicago.edu/academics/design-your-path/specializations/specialization-data-analytics) page
+2. What is the tag associated with the text that starts with: "Students in the Master of Science in Computational Analysis and Public Policy..."? 
+3. What are examples of other content associated with the same tag?
+4. Look at attributes for tags with links. Some of them do not appear to be "full" links. Can you explain why?
+
+## Webscraping steps
+1. *Manual*: inspect website's HTML to see how the info we want to extract is structured and how a computer/scraper sees the webpage
+2. *Code*: download and save HTML associated with a website
+3. *Code*: extract information you want to scrape from HTML
+
+- All web pages have a structured HTML hierarchy, which we now know how to manually parse (step 1)
+- Now we can use code to do Steps 2-3!
+
+
+## Summary
+- All websites are built in HTML 
+- HTML has 3 elements: tags, attributes, and content 
+- "Inspect" a website in your browser to view its HTML
+
+# Using `BeautifulSoup` to Parse HTML
+
+
+## Roadmap 
+- Introduce `requests` library 
+- Introduce `BeautifulSoup` library
+- Introduce basic `BeautifulSoup` scraping syntax using `simple.txt`
+- Demo how to extract URLs 
+
+## Step 2: download and save HTML with `requests`
+* `requests` package allows you to open webpages. 
+* Usually use with URLs but in this case, we'll use it to `open()` a file on disk
+```{python}
+#| echo: true
+import requests
+with open(r'files/simple.html', 'r') as page:
+    text = page.read()
+```
+
+## Preview what we saved
+```{python}
+#| echo: true
+print(text)
+```
+
+
+## Webscraping steps 
+1. *Manual*: inspect website's HTML to see how the info we want to extract is structured and how a computer/scraper sees the webpage
+2. *Code*: download and save HTML associated with a website
+3. *Code*: extract information you want to scrape from HTML
+
+HTML code from `simple.txt` is now in the `text` object. Step 2 - done! 
+
+## Step 3: extract information you want to scrape from HTML
+- We will do step 3 using the `BeautifulSoup` library: takes in HTML code and parses it in a structured way
+    - *Aside: the name Beautiful Soup is a reference to poorly-structured HTML code, which is called "tag soup"*
+
+. . .
+
+- Feed `text` into `BeautifulSoup`:
+```{python}
+#| echo: true
+from bs4 import BeautifulSoup
+soup = BeautifulSoup(text, 'lxml')
+```
+
+- The `soup` object is the website content, parsed by `BeautifulSoup`
+- `lxml` is a parsing library to help `BeautifulSoup` parse HTML
+    - You may also see `html.parser` used, which is a little slower
+
+
+## BeautifulSoup 
+```{python}
+#| echo: true
+print(soup)
+```
+
+## Using a `soup` object
+- At first glance, `soup` object is very similar to the HTML code itself
+- But it has "parsed" the code, making it **searchable** by tag and attribute
+
+## Searching a `soup` object: `.find_all()`
+- Workhorse method of scraping is `.find_all()`: searches for and returns list of *all* instances of a particular tag
+
+- Example: Search for each instance of the tag `p` and return it as a list
+```{python}
+#| echo: true
+soup.find_all('p')
+```
+
+. . .
+
+\vspace{2ex}
+
+- A similar method: `.find()` searches for the *first* instance of an open/close tag 
+
+```{python}
+#| echo: true
+soup.find('p')
+```
+
+## Searching a `soup` object: `.find_all()`
+- We can refine our search to look for combination of tag and attribute
+
+
+```{python}
+#| eval: false
+#| echo: true
+soup.find_all('p', id = "second")
+```
+
+. . .
+
+```{python}
+#| echo: false
+soup.find_all('p', id = "second")
+```
+
+
+## Searching a `soup` object: sped up with AI
+- With AI, you now don't have to write the exact search parameters yourself
+- AI prompt to generate this line of code:
+
+> "I have uploaded a `simple.html` file. Using the `BeautifulSoup` package in Python, write a `.find_all()` command that would retrieve the element that says 'Goodbye!' "
+
+Response: [(link)](https://chatgpt.com/share/697bcbce-f150-800f-b1cd-0224323387e2)
+
+```{python}
+#| eval: false
+#| echo: true
+soup.find_all('p', id='second')
+```
+
+
+
+## Searching a `soup` object
+- The output of `.find_all()` is always a *list* of objects, even if there's only one element in the list
+```{python}
+#| echo: true
+soup.find_all('a')
+```
+- The brackets indicate that it's a list
+
+<!-- ZZZ NEED TO CHECK IF TRUE:  -->
+- In contrast: `.find()` outputs just one object (the first instance)
+
+## Working with a `tag` object 
+- Specifically, `.find_all()` outputs a list of *tag* objects
+
+```{python}
+#| echo: true
+p_tag = soup.find_all('p')[2]
+p_tag
+```
+
+<!-- ZZZ add in code that checks tag type  -->
+
+. . . 
+
+\vspace{2ex}
+- The `p_tag` object is aware of its tag name and attributes
+
+```{python}
+#| echo: true
+p_tag.name
+```
+
+
+```{python}
+#| echo: true
+p_tag.attrs
+```
+
+
+
+## Working with a `tag` object 
+
+- `h1_tag.contents` returns contents as a list. This is useful if there are tags nested inside that you want to iterate through
+```{python}
+#| echo: true
+h1_tag = soup.find('h1')
+h1_tag
+```
+
+```{python}
+#| echo: true
+h1_tag.contents
+```
+
+## Working with a `tag` object 
+
+- `h1_tag.text` returns just the string inside, with tags removed. This is useful if you want to extract and store just the text (i.e., in a `pandas` dataframe)
+```{python}
+#| echo: true
+h1_tag.text
+```
+
+<!-- ## Working with a `tag` object
+- The tag object is also aware of its context in overall HTML code
+```{python}
+#| echo: true
+p_tag.parent
+```
+
+```{python}
+#| echo: true
+h1_tag.children
+```
+ -->
+
+
+<!-- 
+## Working with a `tag` object
+- We can apply `BeautifulSoup` methods to `tag` objects as well 
+- Example: we can isolate a particular tag within all the `p` tags
+```{python}
+#| echo: true
+p_tag = soup.find_all('p')[1]
+p_tag 
+
+```
+
+- We can apply `.text` to it to extract the underlying text for just this tag
+```{python}
+#| echo: true
+p_tag.text
+```
+-->
+
+
+## Working with a `tag` object
+
+- If we wanted to get to the text inside the `a` tag, we have to apply `.find()` *again* to `p_tag`
+```{python}
+#| echo: true
+a_tag = p_tag.find('a')
+a_tag.text
+```
+
+## Working with a `tag` objects: `.get()`
+
+- Say instead of the content, we were interested in the associated *URL*, which is contained in the attribute, `href`
+
+```{python}
+#| echo: true
+print(a_tag)
+```
+
+- To access the URL itself, we use the `.get()` method
+```{python}
+#| echo: true
+print(a_tag.get('href'))
+```
+
+- Once you've extracted the URL, you can store it and redirect the  `requests` package to scrape that next.
+- This forms the basis of *web crawling*, which we will discuss next lecture
+
+## Summary
+- Read in HTML code from disk with `open()` from `requests`
+- Then use `BeautifulSoup` parses HTML code into nested "tag" objects
+- Key methods from `BeautifulSoup`:
+    - `.find_all()`: return list of all tags
+    - `.find()`: returns first tag
+    -  `.contents`, `.text` retrieve content and text
+- `a_tag.get('href')` to get URLs associated with "`a`" tags
+
+# Example: Applying `BeautifulSoup` to a Website
+## Roadmap
+- Apply `BeautifulSoup` methods to a real website
+- Demonstrate manual and AI-assisted iterative process of tweaking your scraper
+
+## Example with Harris Website
+
+- Now let's try pulling an actual website's HTML code and navigating it with `BeautifulSoup`
+- Website of interest: [Harris Specialization in Data Analytics page (link)](https://harris.uchicago.edu/academics/design-your-path/specializations/specialization-data-analytics)
+
+
+## Step 1: manual inspection
+Let's say we're interested in scraping all the bulleted items like the following:
+![](pictures/harris_inspect_3.png){ width=100% fig-align="center"}
+
+## Step 1: manual inspection
+Upon manual inspection of the HTML code, they appear to be under the `<li>` tag
+![](pictures/harris_inspect_4.png){ width=100% fig-align="center"}
+
+
+## Step 2: download and save HTML
+- First, make a request to [Harris Specialization in Data Analytics page](https://harris.uchicago.edu/academics/design-your-path/specializations/specialization-data-analytics)
+- Use `requests.get()` to pull HTML from a website
+    - Have to specify we want `get()` from the `requests` library, not `BeautifulSoup`'s!
+```{python}
+#| echo: true
+url = 'https://harris.uchicago.edu/academics/design-your-path/specializations/specialization-data-analytics'
+response = requests.get(url)
+```
+
+. . .
+
+- Convert into a `soup` object
+```{python}
+#| echo: true
+soup = BeautifulSoup(response.text, 'lxml')
+soup.text[0:50]
+```
+
+- Always look at what you scraped to make sure it matches what you expect
+
+
+## Step 3: first pass to extract info
+- Use `.find_all()` and then sanity-check the output
+```{python}
+#| echo: true
+tag = soup.find_all('li')
+len(tag)
+```
+
+. . .
+
+- `.find_all()` has found 266 `li` tags in the HTML code
+- That is much more than the total number of bullet points we're looking for!
+
+## Step 3: first pass to extract info
+- To see what's going on, we can inspect the first few elements in the `tag` object
+
+. . . 
+
+```{python}
+#| echo: true
+tag[0:2]
+```
+
+## Step 3: first pass to extract info
+
+- The `tag` object is picking up elements that have another tag nested in them 
+- But from earlier, we know the bullet points we're interested in don't have anything nested in them
+
+
+## Step 3: extract info, sped up with AI 
+
+> Help me write a simple webscraper in Python using requests and BeautifulSoup. The target page is: https://harris.uchicago.edu/academics/design-your-path/specializations/specialization-data-analytics. I have uploaded the .html as well. I want to scrape the text inside the bullets. I tried soup.find_all('li') and got too many. I only want the `<li>` bullets where the `<li>` is text-only (no` <a>`, `<span>`, etc. inside). Give me a one-line BeautifulSoup solution using `find_all()`.
+
+AI solution ([(link)](https://chatgpt.com/share/697bca02-5610-800f-91a8-f857eeb45b91)): 
+```{python}
+#| echo: true
+#| eval: false
+clean_bullets = soup.find_all(lambda tag: tag.name == "li" and tag.find(True) is None)
+
+for li in clean_bullets:
+    print(li.get_text(strip=True))
+```
+
+## Step 3: extract info, sped up with AI 
+
+> Explain to me the tag.find(True) is None syntax.
+
+* AI explanation: in `tag.find(True)`, `True` is a "wildcard filter" that returns the first nested tag (of any name). If it returns None, the `<li>` is text-only.
+
+\vspace{0.5em}
+
+. . .
+
+> I haven't learned get_text(strip=True)! What does that do and why do I need it?
+
+* AI explanation: `.text` and `get_text()` are equivalent
+
+
+## Step 3: extract info, sped up with AI 
+```{python}
+#| echo: false
+#| eval: true
+clean_bullets = soup.find_all(lambda tag: tag.name == "li" and tag.find(True) is None)
+```
+
+Run and sanity-check the answer: this seems to have eliminated many of the `li` tags that we didn't want
+\AddToHookNext{env/Highlighting/begin}{\small}
+```{python}
+#| echo: true
+len(clean_bullets)
+```
+
+## Step 3: checking AI's work
+Extract the content from this tag object into a list using `.contents`
+
+```{python}
+#| echo: true
+clean_bullets_content = [li.contents for li in clean_bullets]
+```
+
+## Step 3: checking AI's work
+- Inspecting the beginning of the list ...
+```{python}
+#| echo: true
+for item in clean_bullets_content[0:4]:
+    print(item)
+```
+
+. . .
+
+- and the end...
+```{python}
+#| echo: true
+for item in clean_bullets_content[-2:-1]:
+    print(item)
+```
+
+## Step 3: cleaning up AI's work
+- It seems to have largely gotten all the bullets I want
+- But it also grabbed the "Specialization in Data Analytics"
+- Do some final cleanup to remove the first element
+```{python}
+#| echo: true
+clean_bullets_content = clean_bullets_content[1:]
+for item in clean_bullets_content[0:4]:
+    print(item)
+```
+
+
+## Example with Harris Website 
+Final webscraping code: 
+
+\AddToHookNext{env/Highlighting/begin}{\small}
+```{python}
+#| echo: true
+#| eval: false
+# Extracts and saves HTML code as a parseable object
+url = 'https://harris.uchicago.edu/academics/design-your-path/specializations/specialization-data-analytics'
+response = requests.get(url)
+soup = BeautifulSoup(response.text, 'lxml')
+
+# Specifies tags and attributes we want to collect
+clean_bullets = soup.find_all(lambda tag: tag.name == "li" and tag.find(True) is None)
+
+# "Scrapes" elements from HTML code based on step 2
+clean_bullets_content = [li.contents for li in clean_bullets]
+
+# Final cleanup
+clean_bullets_content = clean_bullets_content[1:4]
+```
+
+
+## Summary: steps to building a scraper
+1. *Manual*: inspect website's HTML to see how the info we want to extract is structured and how a computer/scraper sees the webpage
+    * Come up with an initial guess of how to extract what you're interested in
+2. *Code*: download and save HTML associated with a website
+    * Use `requests.get(URL)` and then import into `BeautifulSoup`
+3. *Code*: extract information you want to scrape from HTML
+    * Use AI and iterate to refine your scraping code
+
+
+
+<!-- 
+## Do-pair-share
+Say we are interested in scraping the left column of the [Harris page](https://harris.uchicago.edu/academics/design-your-path/specializations/specialization-data-analytics):
+![](pictures/harris_DPS.png){ width=40% fig-align="center"}
+
+Inspect the HTML for the Harris webpage and **come up with a plan** for the tags + attributes you would initially try to collect
+
+## Do-pair-share: solution
+
+**Solution**: look for an `a` tag with a `class` with the string `'secondary-nav__item-link'`
+```{python}
+#| echo: true
+
+# 2. Specifies tags and attributes we want to collect
+leftcolumn = soup.find_all('a', 
+    class_ = lambda h: h!=None and 'secondary-nav__item-link' in h)
+
+# 3. "Scrapes" elements from HTML code based on step 2
+leftcolumn_content = [li.contents for li in leftcolumn]
+
+leftcolumn_content[0:2]
+``` 
+
+\vspace{2ex}
+
+**Note**: One quirk in Python is that `'class'` is a "reserved keyword" used to define classes, so we can't use it as an attribute name. Instead, many libraries use `'class_'` ;note the underscore at the end. -->
