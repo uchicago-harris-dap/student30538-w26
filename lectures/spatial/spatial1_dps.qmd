@@ -8,11 +8,21 @@ format:
     slide-number: true
     show-slide-number: all
     self-contained: true
+jupyter: conda-base
 ---
 
 ## Do-pair-share: starter code  {background-color="aliceblue"}
 
 Code to plot small-multiples of top 4 fuel types nationally: 
+
+
+、、、{python}
+import sys
+print(f"Python: {sys.executable}")
+print(f"Version: {sys.version}")
+import geopandas
+print(f"GeoPandas: {geopandas.__version__}")
+```
 
 ```{python}
 #| echo: true
