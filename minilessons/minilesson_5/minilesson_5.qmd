@@ -1,0 +1,157 @@
+---
+title: "Mini-Lesson 5: Unit Testing"
+author: "PPHA 30538 Data Analytics and Visualization for Public Policy"
+format:
+  beamer:
+    slide-level: 1
+    theme: default
+  revealjs:
+    slide-number: true
+    theme: default
+execute:
+  eval: true
+  echo: true
+---
+
+# Agenda
+
+1. Discussion questions
+2. What are unit tests?
+3. Why write tests?
+4. The assert statement
+5. Testing functions
+6. Testing data quality
+7. Hands-on activity
+8. Recap & key takeaways
+
+# Discussion Questions
+
+- How to check that my code is working properly?
+- How could you automate these checks?
+
+
+# What are Unit Tests?
+
+**Unit tests** are small pieces of code that check if other code works correctly
+
+- Each test focuses on one specific behavior
+- Think of them as automated checkers
+
+::: {.notes}
+Unit tests help automate quality checks. You'll use them to verify your data and functions work correctly.
+:::
+
+# Why Write Tests?
+
+**Benefits:**
+
+1. **Catch errors early** - Find bugs before they cause problems
+2. **Save time** - Automated testing is faster than manual checking
+3. **Confidence** - Know your code still works after changes
+4. **Documentation** - Tests show how code should work
+
+**For your assignments:**
+
+- Verify data quality (no missing values, correct columns)
+- Ensure functions work correctly
+
+# The Assert Statement
+
+The `assert` statement checks if something is True:
+
+```{python}
+# assert true_expression, "optional error message"
+
+# Simple examples
+assert 10 > 5       # Passes (nothing happens)
+assert 2 + 2 == 4   # Passes
+```
+
+This will fail
+```{python}
+try:
+    assert 3 + 3 == 7, "Math is broken!"
+except AssertionError as e:
+    print(e)
+```
+
+::: {.notes}
+The assert statement is the foundation of testing. If True, nothing happens. If False, it raises an error.
+:::
+
+# Testing Functions
+
+A simple function:
+```{python}
+def add_numbers(a, b):
+    return a + b
+
+# Test it
+result = add_numbers(5, 3)
+assert result == 8, f"Expected 8 but got {result}"
+print("Test passed!")
+```
+
+We can also write functions for testing:
+```python
+def test_add_positive():
+    assert add_numbers(5, 3) == 8
+
+def test_add_negative():
+    assert add_numbers(-2, -3) == -5
+
+test_add_positive()
+test_add_negative()
+print("All tests passed!")
+```
+
+# Testing Data Quality
+
+```{python}
+import pandas as pd
+
+grades = pd.DataFrame({
+    'id': [1, 2, 3],
+    'grade': [85, 92, 88]
+})
+
+names = pd.DataFrame({
+    'id': [2, 3, 4],
+    'name': ['Alex', 'Yuri', 'Ralph']
+})
+
+# Merge the two DataFrames
+students = grades.merge(names, on='id', how='left')
+
+# Test: Check row count
+assert len(students) == 3
+print("Row count correct")
+```
+
+# Hands-on Activity
+
+Work in pairs!
+
+**Task: Test a Function and Data Quality** (5 minutes)
+
+Open `activity_unit_test.py` in VS Code
+
+- Read the instructions
+    - Complete the TODO sections
+    - Run: `python activity_unit_test.py`
+
+# Recap & key takeaways
+
+**Questions?**
+
+Remember:
+
+- Tests catch errors early and save time
+- Test both functions and data quality
+
+**For PS5 and your final project:**  
+Write tests to verify your data before analysis!
+
+Additional resources:
+
+- [pytest](https://docs.pytest.org/) is a popular open-source testing framework

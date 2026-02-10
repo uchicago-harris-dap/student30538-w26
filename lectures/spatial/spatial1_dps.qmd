@@ -1,0 +1,61 @@
+---
+title: "Advanced Spatial Methods II: do-pair-share"
+author: "Peter Ganong and Maggie Shi"
+date: today
+date-format: long
+format: 
+  revealjs:
+    slide-number: true
+    show-slide-number: all
+    self-contained: true
+---
+
+## Do-pair-share: starter code  {background-color="aliceblue"}
+
+Code to plot small-multiples of top 4 fuel types nationally: 
+
+```{python}
+#| echo: true
+import geopandas as gpd
+import pandas as pd
+import matplotlib.pyplot as plt
+from matplotlib import patheffects as pe # used later to format text
+import shapely
+
+# load geodata
+us_states_gdf = gpd.read_file('data/derived-data/lower_48_states.geojson')
+us_powerplant_df = pd.read_csv('data/derived-data/us_gppd.csv')
+us_powerplant_gdf = gpd.GeoDataFrame(
+    geometry=gpd.points_from_xy(
+    us_powerplant_df.longitude, 
+    us_powerplant_df.latitude, 
+    crs="EPSG:4326"), 
+    data=us_powerplant_df)
+
+# summarize top fuels by gwh in 2019
+summary = (
+    us_powerplant_df
+    .groupby("primary_fuel", as_index=False)["generation_gwh_2019"]
+    .sum()
+    .rename(columns={"generation_gwh_2019": "total_generation_gwh_2019"})
+    .sort_values(by="total_generation_gwh_2019", ascending=False)
+)
+
+# subset to power plants for top 4 fuels
+filtered_powerplant_gdf = us_powerplant_gdf[us_powerplant_gdf["primary_fuel"].isin(summary["primary_fuel"].head(4))]
+
+# initiate 2x2 subplots
+fig, axes = plt.subplots(2, 2, figsize=(12, 10), constrained_layout=True) # 2x2 subplots
+axes = axes.flatten() # flatten for iteration
+
+# iterate through top 4 fuel power plants and plot
+for ax, fuel_type in zip(axes, summary["primary_fuel"].head(4)):
+    group = filtered_powerplant_gdf[filtered_powerplant_gdf["primary_fuel"] == fuel_type]
+    group.plot(ax=ax, markersize=3, alpha=0.7, color='blue')
+
+    us_states_gdf.boundary.plot(ax=ax, color='lightgray', linewidth=0.5)
+
+    ax.set_title(fuel_type, fontsize=16)
+    ax.set_axis_off()
+plt.show()
+```

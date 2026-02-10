@@ -1,0 +1,27 @@
+---
+title: "Kickoff - lecture 10"
+author: "Peter Ganong and Maggie Shi"
+date-format: February 5, 2026
+format: 
+    revealjs:
+        slide-number: true
+        show-slide-number: all
+        self-contained: true
+---
+
+
+## Final project presentation updates
+* Presentation slot assignments out, link [here](https://docs.google.com/spreadsheets/d/17Q8tapI14caCtx5SVLbafV_dSl2FMzbf/edit?usp=sharing&ouid=115002132805773023506&rtpof=true&sd=true) and on Canvas front page
+* 10 minute presentation slots
+    * One randomly-chosen presenter delivers entire presentation, so everyone on group has to show up
+* Attendance expectation: 
+    * You come to your usual lecture section
+    * And the one you are assigned to present in
+    * If these coincide, you only have to attend your usual lecture
+
+## PS5, PS6, guest speaker
+* Goal: get much closer to level of sophistication for analysis in the real world and for the final project
+* Problem set spread out over two weeks (some in week 6 and some in week 7)
+* Will go live Sunday at the latest, will send a Canvas announcement when it is live
+* Very time-consuming, lots of hints and suggestions to help you along the way
+* Tentative: guest speaker from CTA on Feb 26 at 11AM. Sky suite. Still TBD if in-person or zoom. 

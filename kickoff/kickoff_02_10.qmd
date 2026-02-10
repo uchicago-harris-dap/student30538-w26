@@ -1,0 +1,18 @@
+---
+title: "Kickoff - lecture 11"
+author: "Peter Ganong and Maggie Shi"
+date-format: February 10, 2026
+format: 
+    revealjs:
+        slide-number: true
+        show-slide-number: all
+        self-contained: true
+---
+
+## `preprocessing.py` in problem sets {style="font-size: 0.8em"}
+- Q: do we need to submit `preprocessing.py` for problem set submissions?
+- A: No. PS5 says
+
+    > We encourage you to work mainly in `.py` scripts and then port everything to a `.qmd` submission at the end. 
+- Concretely, this means it will be helpful to have a separate `preprocessing.py` script when developing. When you are done with the whole problem set, take that script and include it as a code chunk at the top of the `.qmd`
+- Thank you James for raising this question on Ed!
