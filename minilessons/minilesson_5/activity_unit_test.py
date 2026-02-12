@@ -28,21 +28,21 @@ def is_passing_grade(grade):
 # TODO: Write a test for passing grade (>= 70)
 def test_passing_grade():
     # Your assertion here
-    assert is_passing_grade(85) == ____
+    assert is_passing_grade(85) == True, "Expected grade 85 to be passing"
     print("Test passed: Grade 85 is passing")
 
 
 # TODO: Write a test for failing grade (< 70)
 def test_failing_grade():
     # Your assertion here
-
+    assert is_passing_grade(65) == False, "Expected grade 65 to be failing"
     print("Test passed: Grade 65 is failing")
 
 
 # TODO: Write a test for the edge case (exactly 70)
 def test_edge_case_70():
     # Your assertion here
-
+    assert is_passing_grade(70) == True, "Expected grade 70 to be passing"
     print("Test passed: Grade 70 is passing (edge case)")
 
 
@@ -75,7 +75,7 @@ def test_row_count():
     students = create_student_data()
 
     # Your assertion here
-    raise NotImplementedError("Remove this after adding your assert")
+    assert len(students) == 3, f"Expected 3 rows, got {len(students)}"
 
     print("Test passed: Correct row count (3 rows)")
 
@@ -87,7 +87,8 @@ def test_columns_exist():
     expected_columns = ['id', 'grade', 'name']
 
     # Your assertion here
-    raise NotImplementedError("Remove this after adding your assert")
+    for column in expected_columns:
+        assert column in students.columns, f"Expected column '{column}' to be present"
 
     print("Test passed: All required columns present")
 
@@ -98,7 +99,7 @@ def test_no_missing_grades():
 
     # The .isnull() method returns True for missing values
     # Your assertion here
-    raise NotImplementedError("Remove this after adding your assert")
+    assert students['grade'].isnull().sum() == 0, "Expected no missing grades"
 
     print("Test passed: No missing grades")
 

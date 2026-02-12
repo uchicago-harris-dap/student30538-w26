@@ -1,0 +1,66 @@
+---
+title: "Advanced Spatial Methods I: do-pair-share"
+author: "Peter Ganong and Maggie Shi"
+date: today
+date-format: long
+format: 
+  revealjs:
+    slide-number: true
+    show-slide-number: all
+    self-contained: true
+---
+
+## Do-pair-share {background-color="aliceblue"}
+Modify the map in `spatial2_dps.qmd` so that:
+
+- The Midwest ISO (MISO) is highlighted in `firebrick`
+- The only centroid + label is for MISO
+- But still keep the context of other ISOs and rest of U.S.
+
+
+## Do-pair-share: starting point {background-color="aliceblue"}
+```{python}
+#| eval: true
+#| echo: false
+import geopandas as gpd
+import matplotlib.pyplot as plt
+from matplotlib import patheffects as pe # used later to format text
+import shapely
+
+# load geodata
+iso_gdf = gpd.read_file('data/derived-data/Independent_System_Operator.geojson')
+us_states_gdf = gpd.read_file('data/derived-data/lower_48_states.geojson')
+us_states_gdf.crs = iso_gdf.crs
+
+
+# code to create all-ISO plot 
+    # initiate figure
+    fig, ax = plt.subplots(figsize=(6, 6), dpi=1000)
+
+    # plot ISOs and boundaries
+    iso_gdf.plot(ax = ax, facecolor = 'blue', alpha = 0.3).set_axis_off()
+    iso_gdf.boundary.plot(ax=ax, color="navy", alpha = 0.5, linewidth=0.6)
+
+    # plot centroids
+    iso_gdf.centroid.plot(ax=ax, marker="o",color="darkgreen", markersize=30,zorder=3)
+
+    # iterate through labels 
+    for _, row in iso_gdf.iterrows():
+        ax.text(x=row.geometry.centroid.x, y=row.geometry.centroid.y, ha="left", va="center",
+            s=row["NAME"], 
+            fontsize=5, zorder=3,
+            path_effects=[
+                pe.Stroke(linewidth=2, foreground="white"),  # white halo
+                pe.Normal(),]
+        )
+
+    # plot remaining states underneath
+    us_states_gdf.plot(ax= ax, color= 'lightgray', edgecolor='none', zorder= 2, alpha= 0.3)
+    plt.title("Independent Systems Operators in the Lower 48 States")
+    plt.show()
+
+# create MISO
+miso_gdf = iso_gdf[iso_gdf["NAME"] == 
+    "Midcontinent Independent Transmission System Operator, Inc.."]
+```
+
