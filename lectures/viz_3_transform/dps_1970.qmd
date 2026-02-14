@@ -10,4 +10,20 @@ alt.Chart(movies_url).mark_circle().encode(
     alt.Y('IMDB_Rating:Q', title = "IMDB Rating")
 ).transform_filter('year(datum.Release_Date) < 1970'
 ).properties(title = "Pre-1970 Sample")
+
+alt.Chart(movies_url).mark_bar().transform_filter(
+    'datum.Director != null'
+).transform_aggregate(
+    Gross='average(Worldwide_Gross)',
+    groupby=['Director']
+).transform_window(
+    Rank='rank()',
+    sort=[alt.SortField('Gross',order="descending')]
+).transform_filter(
+    'datum.Rank<10'
+).encode(
+    alt.X('Gross:Q',title="Average worldwide gross per year"),
+    alt.Y('Director:N',sort=alt.EncodingSortField(
+        op='max',field='Gross',order='descending'),
+        title="Director"))
 ```

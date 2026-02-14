@@ -1,0 +1,50 @@
+{
+  "cells": [
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "import pandas as pd\n",
+        "import altair as alt    \n",
+        "movies_url = 'https://cdn.jsdelivr.net/npm/vega-datasets@1/data/movies.json'\n",
+        "movies = pd.read_json(movies_url)\n",
+        "\n",
+        "# scatter plot, filtered to < 1970\n",
+        "alt.Chart(movies_url).mark_circle().encode(\n",
+        "    alt.X('Rotten_Tomatoes_Rating:Q', title = \"Rotten Tomatoes Rating (%)\"),\n",
+        "    alt.Y('IMDB_Rating:Q', title = \"IMDB Rating\")\n",
+        ").transform_filter('year(datum.Release_Date) < 1970'\n",
+        ").properties(title = \"Pre-1970 Sample\")\n",
+        "\n",
+        "alt.Chart(movies_url).mark_bar().transform_filter(\n",
+        "    'datum.Director != null'\n",
+        ").transform_aggregate(\n",
+        "    Gross='average(Worldwide_Gross)',\n",
+        "    groupby=['Director']\n",
+        ").transform_window(\n",
+        "    Rank='rank()',\n",
+        "    sort=[alt.SortField('Gross',order=\"descending')]\n",
+        ").transform_filter(\n",
+        "    'datum.Rank<10'\n",
+        ").encode(\n",
+        "    alt.X('Gross:Q',title=\"Average worldwide gross per year\"),\n",
+        "    alt.Y('Director:N',sort=alt.EncodingSortField(\n",
+        "        op='max',field='Gross',order='descending'),\n",
+        "        title=\"Director\"))"
+      ],
+      "id": "159115c0",
+      "execution_count": null,
+      "outputs": []
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "name": "dap",
+      "language": "python",
+      "display_name": "dap",
+      "path": "/Users/jiayuzhao/Library/Jupyter/kernels/dap"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}
