@@ -2,3 +2,7 @@
 **/.DS_Store
 .venv/
 *.Rhistory
+data/
+*.csv
+*.zip
+*.shp
