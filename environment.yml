@@ -1,7 +1,9 @@
 name: dap
 channels:
+  - conda-forge
   - defaults
 dependencies:
+  - python=3.11
   - altair
   - bs4
   - fiona
@@ -25,3 +27,4 @@ dependencies:
   - pip:
       - vl-convert-python
 prefix: /Users/maggieshi/miniconda3/envs/dap
+

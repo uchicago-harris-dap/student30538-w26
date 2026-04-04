@@ -14,7 +14,19 @@ format:
 ## Do-pair-share {background-color="aliceblue"}
 
 * What happens when you make `precipitation` `O`rdinal?
+
+Y 轴从连续变成离散：每个不同的 average(precipitation) 被当成一个“有序类别”，Y 轴变成一排离散刻度，不再是 0–某个最大值的连续轴
+
+柱长表示的是“排名”而不是“数值”：高度由该值在 ordinal 里的顺序位置决定，不再和降水量成比例，各月之间的相对大小会被扭曲
+
+通常没有 0 基线：离散刻度的起点是数据里的最小值，柱状图一般应有的 0 基线会消失，不利于比较
+
 * What rank-ordering does `altair` assume when you declare the data ordinal?
+不设置 sort 或 domain 时，Vega-Lite/Altair 的默认是 ascending：
+数值（如 average(precipitation)）→ 按数值从小到大
+字符串 → 按字典序 / 字母顺序
+
+所以把 average(precipitation) 标成 :O 时，Y 轴顺序默认是这些平均值的升序
 
 Starter code: 
 

@@ -11,6 +11,7 @@ https://uchicago-harris-dap-dashboards-dps-2app-dps-2-agrx7x.streamlit.app/
 import time
 import streamlit as st
 
+@st.cache_data # 缓存函数结果 相同参数（route, cut_pct）重复调用直接返回缓存
 def compute_passengers(route, cut_pct):
     """Simulate a slow computation (e.g. loading data, running a model)."""
     time.sleep(1)  # stand-in for expensive work
@@ -37,3 +38,6 @@ for route, cut_pct in scenarios:
 
 total = time.time() - overall_start
 st.write(f"Total time: {total:.3f}s")
+
+# 无缓存	~5.000s	每次调用都执行 time.sleep(1)
+# 有缓存	~2.003s	前 2 次计算，后 3 次命中缓存
